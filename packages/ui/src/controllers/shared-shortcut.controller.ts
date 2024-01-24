@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Disposable, ICommandService, LifecycleStages, OnLifecycle, RedoCommand, UndoCommand } from '@univerjs/core';
+import type { IContextService } from '@univerjs/core';
+import { Disposable, FOCUSING_UNIVER_EDITOR, ICommandService, LifecycleStages, OnLifecycle, RedoCommand, UndoCommand } from '@univerjs/core';
 import { Inject, Injector } from '@wendellhu/redi';
 
 import { CopyCommand, CutCommand, PasteCommand } from '../services/clipboard/clipboard.command';
@@ -30,11 +31,19 @@ import { RedoMenuItemFactory, UndoMenuItemFactory } from './menus/menus';
 // If not, the corresponding shortcut would not be triggered and we will perform clipboard operations
 // through clipboard events (editorElement.addEventListener('paste')).
 
+function whenEditorFocused(contextService: IContextService): boolean {
+    return contextService.getContextValue(FOCUSING_UNIVER_EDITOR);
+}
+
 export const CopyShortcutItem: IShortcutItem = {
     id: CopyCommand.id,
     description: 'shortcut.copy',
     group: '1_common-edit',
     binding: KeyCode.C | MetaKeys.CTRL_COMMAND,
+<<<<<<< HEAD
+=======
+    preconditions: whenEditorFocused,
+>>>>>>> 62e37956c (fix(design): fix checkbox onChange)
 };
 
 export const CutShortcutItem: IShortcutItem = {
@@ -42,6 +51,10 @@ export const CutShortcutItem: IShortcutItem = {
     description: 'shortcut.cut',
     group: '1_common-edit',
     binding: KeyCode.X | MetaKeys.CTRL_COMMAND,
+<<<<<<< HEAD
+=======
+    preconditions: whenEditorFocused,
+>>>>>>> 62e37956c (fix(design): fix checkbox onChange)
 };
 
 /**
@@ -52,7 +65,11 @@ export const OnlyDisplayPasteShortcutItem: IShortcutItem = {
     description: 'shortcut.paste',
     group: '1_common-edit',
     binding: KeyCode.V | MetaKeys.CTRL_COMMAND,
+<<<<<<< HEAD
     preconditions: () => false,
+=======
+    preconditions: whenEditorFocused,
+>>>>>>> 62e37956c (fix(design): fix checkbox onChange)
 };
 
 // For compatibility issues, paste from the shortcut should always go with the native paste event,
@@ -70,6 +87,7 @@ export const UndoShortcutItem: IShortcutItem = {
     description: 'shortcut.undo',
     group: '1_common-edit',
     binding: KeyCode.Z | MetaKeys.CTRL_COMMAND,
+    preconditions: whenEditorFocused,
 };
 
 export const RedoShortcutItem: IShortcutItem = {
@@ -77,6 +95,7 @@ export const RedoShortcutItem: IShortcutItem = {
     description: 'shortcut.redo',
     group: '1_common-edit',
     binding: KeyCode.Y | MetaKeys.CTRL_COMMAND,
+    preconditions: whenEditorFocused,
 };
 
 /**
@@ -88,8 +107,7 @@ export class SharedController extends Disposable {
         @Inject(Injector) private readonly _injector: Injector,
         @IMenuService private readonly _menuService: IMenuService,
         @IShortcutService private readonly _shortcutService: IShortcutService,
-        @ICommandService private readonly _commandService: ICommandService,
-        @IClipboardInterfaceService private readonly _interfaceService: IClipboardInterfaceService
+        @ICommandService private readonly _commandService: ICommandService
     ) {
         super();
 

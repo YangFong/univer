@@ -18,11 +18,13 @@ import type { IShapeProps, UniverRenderingContext } from '@univerjs/engine-rende
 import { Rect, Shape } from '@univerjs/engine-render';
 
 export interface ISheetFindReplaceHighlightShapeProps extends IShapeProps {
+    inHiddenRange: boolean;
     activated?: boolean;
 }
 
 export class SheetFindReplaceHighlightShape extends Shape<ISheetFindReplaceHighlightShapeProps> {
     protected _activated = false;
+    protected _inHiddenRange = false;
 
     constructor(key?: string, props?: ISheetFindReplaceHighlightShapeProps) {
         super(key, props);
@@ -34,6 +36,9 @@ export class SheetFindReplaceHighlightShape extends Shape<ISheetFindReplaceHighl
 
     setShapeProps(props: Partial<ISheetFindReplaceHighlightShapeProps>): void {
         this._activated = !!props.activated;
+        if (typeof props.inHiddenRange !== 'undefined') {
+            this._inHiddenRange = props.inHiddenRange;
+        }
 
         this.transformByState({
             width: props.width!,
@@ -42,10 +47,15 @@ export class SheetFindReplaceHighlightShape extends Shape<ISheetFindReplaceHighl
     }
 
     protected override _draw(ctx: CanvasRenderingContext2D): void {
+        const activated = this._activated;
+        const color = this._inHiddenRange
+            ? 'rgb(89, 208, 30)'
+            : activated ? 'rgba(57, 135, 18, 0.2)' : 'rgba(89, 208, 30, 0.2)';
+
         Rect.drawWith(ctx as UniverRenderingContext, {
             width: this.width,
             height: this.height,
-            fill: 'rgba(89, 208, 30, 0.2)',
+            fill: color,
             evented: false,
         });
     }

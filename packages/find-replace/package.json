@@ -63,6 +63,11 @@
     "peerDependencies": {
         "@univerjs/core": "workspace:*",
         "@univerjs/design": "workspace:*",
+<<<<<<< HEAD
+=======
+        "@univerjs/icons": "^0.1.40",
+        "@univerjs/engine-render": "workspace:*",
+>>>>>>> 3aa8f1c1e (fix(design): fix checkbox onChange)
         "@univerjs/ui": "workspace:*",
         "@wendellhu/redi": "0.13.0",
         "react": ">=16.9.0",
@@ -75,6 +80,7 @@
         "@types/react": "^18.2.64",
         "@univerjs/core": "workspace:*",
         "@univerjs/design": "workspace:*",
+        "@univerjs/engine-render": "workspace:*",
         "@univerjs/shared": "workspace:*",
         "@univerjs/ui": "workspace:*",
         "@wendellhu/redi": "^0.13.0",

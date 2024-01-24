@@ -16,5 +16,20 @@
     &-content {
         margin-top: var(--margin-xs);
         margin-bottom: var(--margin-sm);
+
+        .input-affix-wrapper {
+            width: 100%;
+        }
+    }
+}
+
+.form-dual-column-layout {
+    display: flex;
+    justify-content: space-between;
+
+    .form-layout {
+        flex-grow: 1;
+        flex-shrink: 1;
+        max-width: calc(50% - 8px);
     }
 }

@@ -52,6 +52,7 @@ const locale: typeof zhCN = {
         cut: 'Cut',
         copy: 'Copy',
         paste: 'Paste',
+        'shortcut-panel': 'Toggle Shortcut Panel',
     },
     'common-edit': 'Common Editing Shortcuts',
     'toggle-shortcut-panel': 'Toggle Shortcut Panel',
@@ -72,6 +73,7 @@ const locale: typeof zhCN = {
         confirm: 'Confirm',
         cancel: 'Cancel',
     },
+    'global-shortcut': 'Global Shortcut',
 };
 
 export default locale;

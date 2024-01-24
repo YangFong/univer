@@ -14,64 +14,12 @@
  * limitations under the License.
  */
 
+/* eslint-disable ts/prefer-literal-enum-member */
+
 // Useful keyboard event inspection tool https://www.toptal.com/developers/keycode
 
-export const KeyCodeToChar: { [key: number]: string } = {
-    [KeyCode.BACKSPACE]: 'Backspace',
-    [KeyCode.TAB]: 'Tab',
-    [KeyCode.ENTER]: 'Enter',
-    [KeyCode.DELETE]: 'Del',
-    [KeyCode.ESC]: 'Esc',
-    [KeyCode.SPACE]: 'Space',
-    [KeyCode.ARROW_LEFT]: '←',
-    [KeyCode.ARROW_RIGHT]: '→',
-    [KeyCode.ARROW_UP]: '↑',
-    [KeyCode.ARROW_DOWN]: '↓',
-
-    [KeyCode.Digit0]: '0',
-    [KeyCode.Digit1]: '1',
-    [KeyCode.Digit2]: '2',
-    [KeyCode.Digit3]: '3',
-    [KeyCode.Digit4]: '4',
-    [KeyCode.Digit5]: '5',
-    [KeyCode.Digit6]: '6',
-    [KeyCode.Digit7]: '7',
-    [KeyCode.Digit8]: '8',
-    [KeyCode.Digit9]: '9',
-
-    [KeyCode.A]: 'A',
-    [KeyCode.B]: 'B',
-    [KeyCode.C]: 'C',
-    [KeyCode.D]: 'D',
-    [KeyCode.E]: 'E',
-    [KeyCode.F]: 'F',
-    [KeyCode.G]: 'G',
-    [KeyCode.H]: 'H',
-    [KeyCode.I]: 'I',
-    [KeyCode.J]: 'J',
-    [KeyCode.K]: 'K',
-    [KeyCode.L]: 'L',
-    [KeyCode.M]: 'M',
-    [KeyCode.N]: 'N',
-    [KeyCode.O]: 'O',
-    [KeyCode.P]: 'P',
-    [KeyCode.Q]: 'Q',
-    [KeyCode.R]: 'R',
-    [KeyCode.S]: 'S',
-    [KeyCode.T]: 'T',
-    [KeyCode.U]: 'U',
-    [KeyCode.V]: 'V',
-    [KeyCode.W]: 'W',
-    [KeyCode.X]: 'X',
-    [KeyCode.Y]: 'Y',
-    [KeyCode.Z]: 'Z',
-
-    [KeyCode.MINUS]: '-',
-    [KeyCode.EQUAL]: '=',
-};
-
 /** KeyCode that maps to browser standard keycode. */
-export const enum KeyCode {
+export enum KeyCode {
     UNKNOWN = 0,
 
     BACKSPACE = 8,
@@ -143,13 +91,73 @@ export const enum KeyCode {
 
     MINUS = 189,
     EQUAL = 187,
+
+    BACK_SLASH = 220,
 }
 
-export const enum MetaKeys {
+export const KeyCodeToChar: { [key: number]: string } = {
+    [KeyCode.BACKSPACE]: 'Backspace',
+    [KeyCode.TAB]: 'Tab',
+    [KeyCode.ENTER]: 'Enter',
+    [KeyCode.DELETE]: 'Del',
+    [KeyCode.ESC]: 'Esc',
+    [KeyCode.SPACE]: 'Space',
+    [KeyCode.ARROW_LEFT]: '←',
+    [KeyCode.ARROW_RIGHT]: '→',
+    [KeyCode.ARROW_UP]: '↑',
+    [KeyCode.ARROW_DOWN]: '↓',
+
+    [KeyCode.Digit0]: '0',
+    [KeyCode.Digit1]: '1',
+    [KeyCode.Digit2]: '2',
+    [KeyCode.Digit3]: '3',
+    [KeyCode.Digit4]: '4',
+    [KeyCode.Digit5]: '5',
+    [KeyCode.Digit6]: '6',
+    [KeyCode.Digit7]: '7',
+    [KeyCode.Digit8]: '8',
+    [KeyCode.Digit9]: '9',
+
+    [KeyCode.A]: 'A',
+    [KeyCode.B]: 'B',
+    [KeyCode.C]: 'C',
+    [KeyCode.D]: 'D',
+    [KeyCode.E]: 'E',
+    [KeyCode.F]: 'F',
+    [KeyCode.G]: 'G',
+    [KeyCode.H]: 'H',
+    [KeyCode.I]: 'I',
+    [KeyCode.J]: 'J',
+    [KeyCode.K]: 'K',
+    [KeyCode.L]: 'L',
+    [KeyCode.M]: 'M',
+    [KeyCode.N]: 'N',
+    [KeyCode.O]: 'O',
+    [KeyCode.P]: 'P',
+    [KeyCode.Q]: 'Q',
+    [KeyCode.R]: 'R',
+    [KeyCode.S]: 'S',
+    [KeyCode.T]: 'T',
+    [KeyCode.U]: 'U',
+    [KeyCode.V]: 'V',
+    [KeyCode.W]: 'W',
+    [KeyCode.X]: 'X',
+    [KeyCode.Y]: 'Y',
+    [KeyCode.Z]: 'Z',
+
+    [KeyCode.MINUS]: '-',
+    [KeyCode.EQUAL]: '=',
+
+    [KeyCode.BACK_SLASH]: '\\',
+};
+
+/** Define meta key numbers. */
+export enum MetaKeys {
     SHIFT = 1 << 10,
     /** Option key on MacOS. Alt key on other systems. */
     ALT = 1 << 11,
     /** Command key on MacOS. Ctrl key on other systems. */
     CTRL_COMMAND = 1 << 12,
+    /** Ctrl key for MacOS. Not valid on other systems. */
     MAC_CTRL = 1 << 13,
 }

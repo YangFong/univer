@@ -298,9 +298,13 @@ export class ObjectMatrix<T> {
         return this;
     }
 
+    /**
+     * Iterate the object matrix with row priority, which means it scan the whole range row by row.
+     */
     forValue(callback: (row: number, col: number, value: T) => Nullable<boolean>): ObjectMatrix<T> {
         const matrix = this._matrix;
         const matrixRow = Object.keys(matrix);
+
         for (const row of matrixRow) {
             const rowNumber = Number(row);
             const columns = matrix[rowNumber];
@@ -321,6 +325,7 @@ export class ObjectMatrix<T> {
 
         return this;
     }
+
 
     swapRow(src: number, target: number): void {
         const srcRow = this._matrix[src];

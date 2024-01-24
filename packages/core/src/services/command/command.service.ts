@@ -24,7 +24,7 @@ import type { IKeyValue } from '../../shared/types';
 import { IContextService } from '../context/context.service';
 import { ILogService } from '../log/log.service';
 
-export const enum CommandType {
+export enum CommandType {
     /** Command could generate some operations or mutations. */
     COMMAND = 0,
     /** An operation that do not require conflict resolve.  */
@@ -131,9 +131,9 @@ export interface IExecutionOptions {
 export type CommandListener = (commandInfo: Readonly<ICommandInfo>, options?: IExecutionOptions) => void;
 
 export interface ICommandService {
-    registerCommand(command: ICommand): IDisposable;
+    registerCommand(command: ICommand<object, unknown>): IDisposable;
 
-    registerMultipleCommand(command: ICommand): IDisposable;
+    registerMultipleCommand(command: ICommand<object, unknown>): IDisposable;
 
     executeCommand<P extends object = object, R = boolean>(
         id: string,

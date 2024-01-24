@@ -16,12 +16,13 @@
 
 import { CloseSingle } from '@univerjs/icons';
 import clsx from 'clsx';
+import type { InputProps } from 'rc-input';
 import RcInput from 'rc-input';
 import React from 'react';
 
 import styles from './index.module.less';
 
-export interface IInputProps {
+export interface IInputProps extends Omit<InputProps, 'onChange' | 'slot'> {
     autoFocus?: boolean;
 
     /**
@@ -95,6 +96,7 @@ export function Input(props: IInputProps) {
         onKeyDown,
         onChange,
         autoFocus,
+        ...rest
     } = props;
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -112,12 +114,8 @@ export function Input(props: IInputProps) {
     return (
         <RcInput
             prefixCls={styles.input}
-            classNames={{
-                affixWrapper: _className,
-            }}
-            styles={{
-                affixWrapper: affixWrapperStyle,
-            }}
+            classNames={{ affixWrapper: _className }}
+            styles={{ affixWrapper: affixWrapperStyle }}
             autoFocus={autoFocus}
             type={type}
             placeholder={placeholder}
@@ -126,9 +124,8 @@ export function Input(props: IInputProps) {
             onClick={onClick}
             onKeyDown={onKeyDown}
             onChange={handleChange}
-            allowClear={{
-                clearIcon: allowClear ? <CloseSingle /> : <></>,
-            }}
+            allowClear={{ clearIcon: allowClear ? <CloseSingle /> : <></> }}
+            {...rest}
         />
     );
 }

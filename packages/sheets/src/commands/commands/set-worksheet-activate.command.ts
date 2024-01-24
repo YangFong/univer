@@ -29,7 +29,6 @@ export interface ISetWorksheetActivateCommandParams {
 export const SetWorksheetActivateCommand: ICommand = {
     type: CommandType.COMMAND,
     id: 'sheet.command.set-worksheet-activate',
-
     handler: (accessor: IAccessor, params?: ISetWorksheetActivateCommandParams) => {
         const commandService = accessor.get(ICommandService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
@@ -42,11 +41,9 @@ export const SetWorksheetActivateCommand: ICommand = {
             subUnitId = params.subUnitId ?? subUnitId;
         }
 
-        const redoMutationParams: ISetWorksheetActiveOperationParams = {
+        return commandService.syncExecuteCommand(SetWorksheetActiveOperation.id, {
             unitId,
             subUnitId,
-        };
-
-        return commandService.syncExecuteCommand(SetWorksheetActiveOperation.id, redoMutationParams);
+        } as ISetWorksheetActiveOperationParams);
     },
 };
