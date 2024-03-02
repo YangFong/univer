@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CommandType, Disposable, fromCallback, groupBy, ICommandService, IContextService, ILogService, IUndoRedoService, IUniverInstanceService, LifecycleStages, ObjectMatrix, OnLifecycle, rotate } from '@univerjs/core';
+import { CommandType, Disposable, fromCallback, groupBy, ICommandService, IContextService, ILogService, IUndoRedoService, IUniverInstanceService, LifecycleStages, ObjectMatrix, OnLifecycle, replaceInDocumentBody, rotate, Tools } from '@univerjs/core';
 import type { ICellData, IObjectMatrixPrimitiveType, IRange, Nullable, Workbook, Worksheet } from '@univerjs/core';
 import { IRenderManagerService, RENDER_RAW_FORMULA_KEY } from '@univerjs/engine-render';
 import type { IFindComplete, IFindMatch, IFindMoveParams, IFindQuery, IFindReplaceProvider, IReplaceAllResult } from '@univerjs/find-replace';
@@ -742,6 +742,7 @@ export class SheetFindModel extends FindModel {
         const { startRow, startColumn } = range;
         const currentContent = worksheet.getCellRaw(startRow, startColumn)!; // TODO: should not get it again, just hook to match item
 
+        // replace formular
         if (match.isFormula) {
             if (!shouldReplaceFormula) {
                 return null;
@@ -751,13 +752,16 @@ export class SheetFindModel extends FindModel {
             return { f: newContent, v: null };
         }
 
-        const isPlainText = !!currentContent.v && !currentContent.p;
-        if (!isPlainText) {
-            // TODO@wzhudev: implement rich text replace here
-            this._logService.error('Not implementing rich text replacing yet.');
-            return null;
+        // replace rich format text
+        const isRichText = !!currentContent.p?.body;
+        if (isRichText) {
+            const newDocumentBody = replaceInDocumentBody(currentContent.p!.body!, findString, replaceString);
+            const newContent = Tools.deepClone(currentContent);
+            newContent.p!.body = newDocumentBody;
+            return newContent;
         }
 
+        // replace plain text
         const newContent = currentContent.v!.toString().replace(new RegExp(findString, replaceFlag), replaceString!);
         return { v: newContent };
     }

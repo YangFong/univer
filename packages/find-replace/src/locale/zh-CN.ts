@@ -40,6 +40,7 @@ const locale: typeof enUS = {
                 title: '查找范围',
                 'current-sheet': '当前子表',
                 workbook: '整个工作簿',
+                range: '指定范围',
             },
             'find-direction': {
                 title: '查找顺序',

@@ -23,14 +23,18 @@ import {
     OpenFindDialogOperation,
     OpenReplaceDialogOperation,
 } from '../commands/operations/find-replace.operation';
-import { FIND_REPLACE_INPUT_FOCUS, FIND_REPLACE_REPLACE_REVEALED } from '../services/context-keys';
+import { FIND_REPLACE_DIALOG_FOCUS, FIND_REPLACE_INPUT_FOCUS, FIND_REPLACE_REPLACE_REVEALED } from '../services/context-keys';
 
-function whenFindReplaceDialogFocused(contextService: IContextService) {
-    return contextService.getContextValue(FIND_REPLACE_INPUT_FOCUS);
+function whenFindReplaceDialogFocused(contextService: IContextService): boolean {
+    return contextService.getContextValue(FIND_REPLACE_DIALOG_FOCUS);
 }
 
-function whenReplaceRevealed(contextService: IContextService) {
+function whenReplaceRevealed(contextService: IContextService): boolean {
     return contextService.getContextValue(FIND_REPLACE_REPLACE_REVEALED);
+}
+
+function whenFindReplaceInputFocused(contextService: IContextService): boolean {
+    return contextService.getContextValue(FIND_REPLACE_INPUT_FOCUS);
 }
 
 const FIND_REPLACE_SHORTCUT_GROUP = '7_find-replace-shortcuts';
@@ -45,10 +49,22 @@ export const OpenFindDialogShortcutItem: IShortcutItem = {
     },
 };
 
+export const MacOpenFindDialogShortcutItem: IShortcutItem = {
+    id: OpenFindDialogOperation.id,
+    description: 'find-replace.shortcut.open-find-dialog',
+    binding: KeyCode.F | MetaKeys.CTRL_COMMAND,
+    mac: KeyCode.F | MetaKeys.MAC_CTRL,
+    group: FIND_REPLACE_SHORTCUT_GROUP,
+    preconditions(contextService) {
+        return !whenFindReplaceDialogFocused(contextService);
+    },
+};
+
 export const OpenReplaceDialogShortcutItem: IShortcutItem = {
     id: OpenReplaceDialogOperation.id,
     description: 'find-replace.shortcut.open-replace-dialog',
     binding: KeyCode.H | MetaKeys.CTRL_COMMAND,
+    mac: KeyCode.H | MetaKeys.MAC_CTRL,
     group: FIND_REPLACE_SHORTCUT_GROUP,
     preconditions(contextService) {
         return !whenFindReplaceDialogFocused(contextService) || !whenReplaceRevealed(contextService);
@@ -62,7 +78,7 @@ export const GoToNextFindMatchShortcutItem: IShortcutItem = {
     group: FIND_REPLACE_SHORTCUT_GROUP,
     priority: 1000,
     preconditions(contextService) {
-        return whenFindReplaceDialogFocused(contextService);
+        return whenFindReplaceInputFocused(contextService);
     },
 };
 
@@ -73,6 +89,6 @@ export const GoToPreviousFindMatchShortcutItem: IShortcutItem = {
     group: FIND_REPLACE_SHORTCUT_GROUP,
     priority: 1000,
     preconditions(contextService) {
-        return whenFindReplaceDialogFocused(contextService);
+        return whenFindReplaceInputFocused(contextService);
     },
 };

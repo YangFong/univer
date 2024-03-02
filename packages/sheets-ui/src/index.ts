@@ -23,7 +23,6 @@ export { ExpandSelectionCommand, JumpOver, MoveSelectionCommand } from './comman
 export { SetCellEditVisibleArrowOperation } from './commands/operations/cell-edit.operation';
 export { SetScrollOperation } from './commands/operations/scroll.operation';
 export { ScrollController } from './controllers/scroll.controller';
-export { SetEditorResizeOperation } from './commands/operations/set-editor-resize.operation';
 export { SetZoomRatioOperation } from './commands/operations/set-zoom-ratio.operation';
 export {
     ResetScrollCommand,

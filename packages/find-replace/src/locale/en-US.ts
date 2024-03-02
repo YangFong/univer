@@ -43,6 +43,7 @@ const locale = {
                 title: 'Find Range',
                 'current-sheet': 'Current Sheet',
                 workbook: 'Workbook',
+                range: 'Dedicated Range',
             },
             'find-by': {
                 title: 'Find By',

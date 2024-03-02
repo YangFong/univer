@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Button, Checkbox, FormLayout, Input, InputWithSlot, Pager, Select } from '@univerjs/design';
-import { ILayoutService, useObservable } from '@univerjs/ui';
+import { Button, Checkbox, FormLayout, Input, InputWithSlot, MessageType, Pager, Select } from '@univerjs/design';
+import { ILayoutService, IMessageService, useObservable } from '@univerjs/ui';
 import type { Nullable } from '@univerjs/core';
 import { ICommandService, IContextService, LocaleService } from '@univerjs/core';
 import type { IDisposable } from '@wendellhu/redi';
@@ -26,18 +26,28 @@ import { fromEvent } from 'rxjs';
 
 import { FormDualColumnLayout } from '@univerjs/design/components/form-layout/FormLayout.js';
 import { FindBy, FindDirection, FindScope, IFindReplaceService } from '../../services/find-replace.service';
-import { FIND_REPLACE_INPUT_FOCUS } from '../../services/context-keys';
+import { FIND_REPLACE_DIALOG_FOCUS, FIND_REPLACE_INPUT_FOCUS } from '../../services/context-keys';
 import { ReplaceAllMatchesCommand, ReplaceCurrentMatchCommand } from '../../commands/command/replace.command';
 import styles from './Dialog.module.less';
 import { SearchInput } from './SearchInput';
 
 interface ISubFormRef {
     focus(): void;
+    selectHasFocus(): boolean;
 }
 
 function useFindInputFocus(findReplaceService: IFindReplaceService, ref: ForwardedRef<unknown>): void {
-    const focus = useCallback(() => (document.querySelector('.univer-find-input input') as Nullable<HTMLInputElement>)?.focus(), []);
-    useImperativeHandle(ref, () => ({ focus }));
+    const focus = useCallback(() => {
+        (document.querySelector('.univer-find-input input') as Nullable<HTMLInputElement>)?.focus();
+    }, []);
+
+    const selectHasFocus = useCallback(() => {
+        const allInputs = document.querySelectorAll('.univer-find-replace-dialog-container .univer-select-selection-search-input');
+        return Array.from(allInputs).some((input) => input === document.activeElement);
+    }, []);
+
+    useImperativeHandle(ref, () => ({ focus, selectHasFocus }));
+
     useEffect(() => {
         const subscription = findReplaceService.focusSignal$.subscribe(() => focus());
         return () => subscription.unsubscribe();
@@ -49,7 +59,7 @@ export const FindDialog = forwardRef(function FindDialogImpl(_props, ref) {
     const findReplaceService = useDependency(IFindReplaceService);
 
     const state = useObservable(findReplaceService.state$, undefined, true);
-    const { findString, matchesCount, matchesPosition } = state;
+    const { findCompleted, findString, matchesCount, matchesPosition } = state;
 
     const revealReplace = useCallback(() => findReplaceService.revealReplace(), [findReplaceService]);
 
@@ -60,6 +70,7 @@ export const FindDialog = forwardRef(function FindDialogImpl(_props, ref) {
     return (
         <Fragment>
             <SearchInput
+                findCompleted={findCompleted}
                 className="univer-find-input"
                 matchesCount={matchesCount}
                 matchesPosition={matchesPosition}
@@ -81,6 +92,7 @@ export const ReplaceDialog = forwardRef(function ReplaceDIalogImpl(_props, ref) 
     const findReplaceService = useDependency(IFindReplaceService);
     const localeService = useDependency(LocaleService);
     const commandService = useDependency(ICommandService);
+    const messageService = useDependency(IMessageService);
 
     const currentMatch = useObservable(findReplaceService.currentMatch$, undefined, true);
     const replcaeables = useObservable(findReplaceService.replaceables$, undefined, true);
@@ -138,10 +150,26 @@ export const ReplaceDialog = forwardRef(function ReplaceDIalogImpl(_props, ref) 
 
     useFindInputFocus(findReplaceService, ref);
 
+    useEffect(() => {
+        const shouldDisplayNoMatchInfo = findCompleted && matchesCount === 0;
+
+        let messageDisposable: Nullable<IDisposable> = null;
+        if (shouldDisplayNoMatchInfo) {
+            messageDisposable = messageService.show({
+                content: localeService.t('find-replace.dialog.no-match'),
+                type: MessageType.Warning,
+                delay: 5000,
+            });
+        }
+
+        return () => messageDisposable?.dispose();
+    }, [findCompleted, matchesCount, messageService, localeService]);
+
     return (
         <Fragment>
             <FormLayout label={localeService.t('find-replace.dialog.find')}>
                 <SearchInput
+                    findCompleted={findCompleted}
                     className="univer-find-input"
                     matchesCount={matchesCount}
                     matchesPosition={matchesPosition}
@@ -161,16 +189,29 @@ export const ReplaceDialog = forwardRef(function ReplaceDIalogImpl(_props, ref) 
             <FormLayout label={localeService.t('find-replace.dialog.find-direction.title')}>
                 <Select value={findDirection} options={findDirectionOptions} onChange={onChangeFindDirection} />
             </FormLayout>
-            <FormDualColumnLayout>
-                <Fragment>
+
+            {/* Find Scope Selections */}
+            {findScope !== FindScope.RANGE
+                ? (
                     <FormLayout label={localeService.t('find-replace.dialog.find-scope.title')}>
                         <Select value={findScope} options={findScopeOptions} onChange={onChangeFindScope}></Select>
                     </FormLayout>
-                    <FormLayout label={localeService.t('find-replace.dialog.find-by.title')}>
-                        <Select value={findBy} options={findByOptions} onChange={onChangeFindBy}></Select>
-                    </FormLayout>
-                </Fragment>
-            </FormDualColumnLayout>
+                )
+                : (
+                    <FormDualColumnLayout>
+                        <Fragment>
+                            <FormLayout label={localeService.t('find-replace.dialog.find-scope.title')}>
+                                <Select value={findScope} options={findScopeOptions} onChange={onChangeFindScope}></Select>
+                            </FormLayout>
+                            RANGE_SELECTOR
+                        </Fragment>
+                    </FormDualColumnLayout>
+                )}
+
+            <FormLayout label={localeService.t('find-replace.dialog.find-by.title')}>
+                <Select value={findBy} options={findByOptions} onChange={onChangeFindBy}></Select>
+            </FormLayout>
+
             <FormDualColumnLayout>
                 <Fragment>
                     <FormLayout>
@@ -197,9 +238,6 @@ export const ReplaceDialog = forwardRef(function ReplaceDIalogImpl(_props, ref) 
                     </FormLayout>
                 </Fragment>
             </FormDualColumnLayout>
-            <div className={styles.findReplaceNoMatch}>
-                {findCompleted && matchesCount === 0 && <span>{localeService.t('find-replace.dialog.no-match')}</span>}
-            </div>
             <div className={styles.findReplaceButtonsGroup}>
                 <Button type="primary" onClick={onClickFindButton} disabled={findDisabled}>{localeService.t('find-replace.dialog.find')}</Button>
                 <span className={styles.findReplaceButtonsGroupRight}>
@@ -216,17 +254,9 @@ export function FindReplaceDialog() {
     const layoutService = useDependency(ILayoutService);
     const contextService = useDependency(IContextService);
 
-    const dialogContainerRef = useRef<HTMLDivElement>(null);
-    const inputRef = useRef<ISubFormRef>(null);
-
     const state = useObservable(findReplaceService.state$, undefined, true);
-    const { matchesCount, matchesPosition } = state;
-    const revealReplace = useCallback(() => findReplaceService.revealReplace(), [findReplaceService]);
 
-    const setFocusContext = useCallback(
-        (focused: boolean) => contextService.setContextValue(FIND_REPLACE_INPUT_FOCUS, focused),
-        [contextService]);
-
+    const dialogContainerRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         let disposable: IDisposable | undefined;
         if (dialogContainerRef.current) {
@@ -236,28 +266,43 @@ export function FindReplaceDialog() {
         return () => disposable?.dispose();
     }, [layoutService]);
 
+    const focusRef = useRef<ISubFormRef>(null);
+    const setDialogContainerFocus = useCallback(
+        (focused: boolean) => contextService.setContextValue(FIND_REPLACE_DIALOG_FOCUS, focused),
+        [contextService]);
+    const setDialogInputFocus = useCallback(
+        (focused: boolean) => contextService.setContextValue(FIND_REPLACE_INPUT_FOCUS, focused)
+        , []);
     useEffect(() => {
         const focusSubscription = fromEvent(document, 'focusin').subscribe((event) => {
             if (event.target && dialogContainerRef.current?.contains(event.target as Node)) {
-                setFocusContext(true);
+                setDialogContainerFocus(true);
             } else {
-                setFocusContext(false);
+                setDialogContainerFocus(false);
+            }
+
+            if (!focusRef.current || !focusRef.current.selectHasFocus()) {
+                setDialogInputFocus(true);
+            } else {
+                setDialogInputFocus(false);
             }
         });
 
         // Focus the input element the first time we open the find replace dialog.
-        inputRef.current?.focus();
-        setFocusContext(true);
+        focusRef.current?.focus();
+
+        setDialogContainerFocus(true);
+        setDialogInputFocus(true);
 
         return () => {
             focusSubscription.unsubscribe();
-            setFocusContext(false);
+            setDialogContainerFocus(false);
         };
-    }, [setFocusContext]);
+    }, [setDialogContainerFocus]);
 
     return (
         <div className={styles.findReplaceDialogContainer} ref={dialogContainerRef}>
-            {!state.replaceRevealed ? <FindDialog ref={inputRef} /> : <ReplaceDialog ref={inputRef} />}
+            {!state.replaceRevealed ? <FindDialog ref={focusRef} /> : <ReplaceDialog ref={focusRef} />}
         </div>
     );
 }
@@ -268,6 +313,7 @@ function useFindScopeOptions(localeService: LocaleService): Array<{ label: strin
         return [
             { label: localeService.t('find-replace.dialog.find-scope.current-sheet'), value: FindScope.SUBUNIT },
             { label: localeService.t('find-replace.dialog.find-scope.workbook'), value: FindScope.UNIT },
+            { label: localeService.t('find-replace.dialog.find-scope.range'), value: FindScope.RANGE },
         ];
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [locale]);

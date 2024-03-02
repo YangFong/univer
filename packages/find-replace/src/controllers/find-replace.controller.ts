@@ -42,6 +42,7 @@ import { ReplaceAllMatchesCommand, ReplaceCurrentMatchCommand } from '../command
 import {
     GoToNextFindMatchShortcutItem,
     GoToPreviousFindMatchShortcutItem,
+    MacOpenFindDialogShortcutItem,
     OpenFindDialogShortcutItem,
     OpenReplaceDialogShortcutItem,
 } from './find-replace.shortcut';
@@ -111,11 +112,10 @@ export class FindReplaceController extends RxDisposable {
         [
             OpenReplaceDialogShortcutItem,
             OpenFindDialogShortcutItem,
+            MacOpenFindDialogShortcutItem,
             GoToPreviousFindMatchShortcutItem,
             GoToNextFindMatchShortcutItem,
-        ].forEach((s) => {
-            this.disposeWithMe(this._shortcutService.registerShortcut(s));
-        });
+        ].forEach((s) => this.disposeWithMe(this._shortcutService.registerShortcut(s)));
     }
 
     private _openPanel(): void {
