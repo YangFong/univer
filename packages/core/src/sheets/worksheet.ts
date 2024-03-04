@@ -54,9 +54,8 @@ export class Worksheet {
         this._rowManager = new RowManager(this._snapshot, rowData);
         this._columnManager = new ColumnManager(this._snapshot, columnData);
 
-        // This view model will immediately injected with hooks from SheetViewModel service as Worksheet
-        // is constructed.
-        this._viewModel = new SheetViewModel();
+        // This view model will immediately injected with hooks from SheetViewModel service as Worksheet is constructed.
+        this._viewModel = new SheetViewModel((row, col) => this.getCellRaw(row, col));
     }
 
     /**
@@ -552,51 +551,55 @@ export class Worksheet {
      *
      * Performance intensive.
      */
-    iterateByRow(range: IRange): Iterator<Readonly<ICell>, Readonly<ICell>> {
+    iterateByRow(range: IRange): Iterable<Readonly<ICell>> {
         const { startRow, startColumn, endRow, endColumn } = range;
 
         // eslint-disable-next-line ts/no-this-alias
         const worksheet = this;
 
-        let rowIndex = startRow;
-        let columnIndex = startColumn;
-
         return {
-            next(): IteratorResult<Readonly<ICell>> {
-                while (true) {
-                    if (columnIndex > endColumn) {
-                        rowIndex += 1;
-                        columnIndex = startColumn;
-                    }
+            [Symbol.iterator]: () => {
+                let rowIndex = startRow;
+                let columnIndex = startColumn;
 
-                    if (rowIndex > endRow) {
-                        return { done: true, value: undefined };
-                    }
+                return {
+                    next(): IteratorResult<Readonly<ICell>> {
+                        while (true) {
+                            if (columnIndex > endColumn) {
+                                rowIndex += 1;
+                                columnIndex = startColumn;
+                            }
 
-                    // search for the next cell that is not non-top-left cell of a merged cell
-                    const cellValue = worksheet.getCell(rowIndex, columnIndex);
-                    const mergedCell = worksheet.getMergedCell(rowIndex, columnIndex);
-                    if (
-                        mergedCell &&
-                        (!cellValue || rowIndex !== mergedCell.startRow || columnIndex !== mergedCell.startColumn)
-                    ) {
-                        columnIndex = mergedCell.endColumn + 1;
-                        // continue searching
-                    } else if (!cellValue) {
-                        columnIndex += 1;
-                        // continue searching
-                    } else {
-                        const value: ICell = { row: rowIndex, col: columnIndex, value: cellValue };
-                        if (mergedCell) {
-                            value.colSpan = mergedCell.endColumn - mergedCell.startColumn + 1;
-                            value.rowSpan = mergedCell.endRow - mergedCell.startRow + 1;
+                            if (rowIndex > endRow) {
+                                return { done: true, value: undefined };
+                            }
+
+                            // search for the next cell that is not non-top-left cell of a merged cell
+                            const cellValue = worksheet.getCell(rowIndex, columnIndex);
+                            const mergedCell = worksheet.getMergedCell(rowIndex, columnIndex);
+                            if (
+                                mergedCell &&
+                                (!cellValue || rowIndex !== mergedCell.startRow || columnIndex !== mergedCell.startColumn)
+                            ) {
+                                columnIndex = mergedCell.endColumn + 1;
+                                // continue searching
+                            } else if (!cellValue) {
+                                columnIndex += 1;
+                                // continue searching
+                            } else {
+                                const value: ICell = { row: rowIndex, col: columnIndex, value: cellValue };
+                                if (mergedCell) {
+                                    value.colSpan = mergedCell.endColumn - mergedCell.startColumn + 1;
+                                    value.rowSpan = mergedCell.endRow - mergedCell.startRow + 1;
+                                }
+
+                                // we still need to move to the next position by leave searching to the next time `next` get called
+                                columnIndex += 1;
+                                return { done: false, value };
+                            }
                         }
-
-                        // we still need to move to the next position by leave searching to the next time `next` get called
-                        columnIndex += 1;
-                        return { done: false, value };
-                    }
-                }
+                    },
+                };
             },
         };
     }
@@ -606,56 +609,60 @@ export class Worksheet {
      *
      * Performance intensive.
      */
-    iterateByColumn(range: IRange): Iterator<Readonly<ICell>, Readonly<ICell>> {
+    iterateByColumn(range: IRange): Iterable<Readonly<ICell>> {
         const { startRow, startColumn, endRow, endColumn } = range;
 
         // eslint-disable-next-line ts/no-this-alias
         const worksheet = this;
 
-        let rowIndex = startRow;
-        let columnIndex = startColumn;
-
         return {
-            next(): IteratorResult<Readonly<ICell>> {
-                while (true) {
-                    if (rowIndex > endRow) {
-                        columnIndex += 1;
-                        rowIndex = startRow;
-                    }
+            [Symbol.iterator]: () => {
+                let rowIndex = startRow;
+                let columnIndex = startColumn;
 
-                    if (columnIndex > endColumn) {
-                        return { done: true, value: undefined };
-                    }
+                return {
+                    next(): IteratorResult<Readonly<ICell>> {
+                        while (true) {
+                            if (rowIndex > endRow) {
+                                columnIndex += 1;
+                                rowIndex = startRow;
+                            }
 
-                    // search for the next cell that is not non-top-left cell of a merged cell
-                    const cellValue = worksheet.getCell(rowIndex, columnIndex);
-                    const mergedCell = worksheet.getMergedCell(rowIndex, columnIndex);
-                    if (
-                        mergedCell &&
-                        (!cellValue || rowIndex !== mergedCell.startRow || columnIndex !== mergedCell.startColumn)
-                    ) {
-                        rowIndex = mergedCell.endRow + 1;
-                        // continue searching
-                    } else if (!cellValue) {
-                        rowIndex += 1;
-                        // continue searching
-                    } else {
-                        const value: ICell = { row: rowIndex, col: columnIndex, value: cellValue };
-                        if (mergedCell) {
-                            value.colSpan = mergedCell.endColumn - mergedCell.startColumn + 1;
-                            value.rowSpan = mergedCell.endRow - mergedCell.startRow + 1;
+                            if (columnIndex > endColumn) {
+                                return { done: true, value: undefined };
+                            }
+
+                            // search for the next cell that is not non-top-left cell of a merged cell
+                            const cellValue = worksheet.getCell(rowIndex, columnIndex);
+                            const mergedCell = worksheet.getMergedCell(rowIndex, columnIndex);
+                            if (
+                                mergedCell &&
+                                (!cellValue || rowIndex !== mergedCell.startRow || columnIndex !== mergedCell.startColumn)
+                            ) {
+                                rowIndex = mergedCell.endRow + 1;
+                                // continue searching
+                            } else if (!cellValue) {
+                                rowIndex += 1;
+                                // continue searching
+                            } else {
+                                const value: ICell = { row: rowIndex, col: columnIndex, value: cellValue };
+                                if (mergedCell) {
+                                    value.colSpan = mergedCell.endColumn - mergedCell.startColumn + 1;
+                                    value.rowSpan = mergedCell.endRow - mergedCell.startRow + 1;
+                                }
+
+                                // we still need to move to the next position by leave searching to the next time `next` get called
+                                rowIndex += 1;
+                                return { done: false, value };
+                            }
                         }
-
-                        // we still need to move to the next position by leave searching to the next time `next` get called
-                        rowIndex += 1;
-                        return { done: false, value };
-                    }
-                }
+                    },
+                };
             },
         };
-    }
 
-    // #endregion
+        // #endregion
+    }
 }
 
 /**

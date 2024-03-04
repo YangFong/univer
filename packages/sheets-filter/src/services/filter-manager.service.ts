@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-export * from './auto-fill-series';
-export * from './border-style-types';
-export * from './color-type';
-export * from './common-hide-types';
-export * from './copy-paste-type';
-export * from './developer-metadata-visibility';
-export * from './dimension';
-export * from './direction';
-export * from './format-type';
-export * from './interpolation-point-type';
-export * from './locale-type';
-export * from './protection-type';
-export * from './relative-date';
-export * from './shape-type';
-export * from './sheet-types';
-export * from './text-style';
-export * from './theme-color-type';
+import { Disposable, LifecycleStages, OnLifecycle } from '@univerjs/core';
+import type { FilterModel } from '../models/filter-model';
+
+/**
+ * This service is responsible for managing filter models, especially their lifecycle.
+ */
+@OnLifecycle(LifecycleStages.Starting, FilterModelManagerService)
+export class FilterModelManagerService extends Disposable {
+    private readonly _filterModels = new Map<string, FilterModel>();
+}

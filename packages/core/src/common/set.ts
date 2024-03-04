@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-export * from './auto-fill-series';
-export * from './border-style-types';
-export * from './color-type';
-export * from './common-hide-types';
-export * from './copy-paste-type';
-export * from './developer-metadata-visibility';
-export * from './dimension';
-export * from './direction';
-export * from './format-type';
-export * from './interpolation-point-type';
-export * from './locale-type';
-export * from './protection-type';
-export * from './relative-date';
-export * from './shape-type';
-export * from './sheet-types';
-export * from './text-style';
-export * from './theme-color-type';
+/**
+ * Merge the second set to the first set.
+ * @param s1 the first set
+ * @param s2 the second set
+ * @returns the merged set
+ */
+export function mergeSets<T>(s1: Set<T>, s2: Set<T>): Set<T> {
+    s2.forEach((s) => s1.add(s));
+    return s1;
+}

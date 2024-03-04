@@ -18,7 +18,7 @@ import type { IDisposable } from '@wendellhu/redi';
 
 import type { Nullable } from '../common/type-utils';
 import { Disposable, toDisposable } from '../shared/lifecycle';
-import type { ICellDataForSheetInterceptor } from '../types/interfaces/i-cell-data';
+import type { ICellData, ICellDataForSheetInterceptor } from '../types/interfaces/i-cell-data';
 
 /**
  * @intenal
@@ -38,11 +38,14 @@ export interface IRowFilteredInterceptor {
  * @internal
  */
 export class SheetViewModel extends Disposable {
-    // NOTE: maybe we don't need arrays here, and they don't work like a real interceptor
-    // they are actually callbacks
-
     private _cellContentInterceptor: Nullable<ICellContentInterceptor> = null;
     private _rowFilteredInterceptor: Nullable<IRowFilteredInterceptor> = null;
+
+    constructor(
+        private readonly getRawCell: (row: number, col: number) => Nullable<ICellData>
+    ) {
+        super();
+    }
 
     override dispose(): void {
         super.dispose();
@@ -52,7 +55,11 @@ export class SheetViewModel extends Disposable {
     }
 
     getCell(row: number, col: number): Nullable<ICellDataForSheetInterceptor> {
-        return this._cellContentInterceptor?.getCell(row, col) ?? null;
+        if (this._cellContentInterceptor) {
+            return this._cellContentInterceptor.getCell(row, col);
+        }
+
+        return this.getRawCell(row, col);
     }
 
     getRowFiltered(row: number): boolean {

@@ -17,29 +17,59 @@
 import type { BooleanNumber } from '../enum';
 import type { IRange } from './i-range';
 
+// NOTE: Please refer to 18.3.2 AutoFilter Settings.
+// Properties of this interface would be added in the future.
+// Please make sure that it is backward compatible.
+
 export interface IAutoFilter {
-    ref: IRange[];
-    filterColumns: [];
+    ref: IRange;
+    filterColumns: IFilterColumn[];
+
+    cachedFilteredOut?: number[];
 }
 
-export type IFilterColumn = IFilterColumnWithCustomFilters | IFilterColumnWithFilters;
+export interface IFilterColumn {
+    colId: number;
 
-export interface IFilterColumnWithFilters {
-    col: number;
-    filters?: string[];
-}
-
-export interface IFilterColumnWithCustomFilters {
-    col: number;
-    customFilters: ICustomFilters;
-}
+    filters?: Array<string>;
+    customFilters?: ICustomFilters;
+};
 
 export interface ICustomFilters {
-    and?: BooleanNumber;
-    customFilters: ICustomFilter[];
+    and?: BooleanNumber.TRUE;
+
+    /** Max 2 capacity. */
+    customFilters: [ICustomFilter] | [ICustomFilter, ICustomFilter];
+}
+
+export interface IDynamicFilter {
+    val: string | number;
+
+    type: DynamicFilterOperator;
 }
 
 export interface ICustomFilter {
-    operator: string;
-    value: string | number;
+    val: string | number;
+
+    /** This field may be empty. */
+    operator?: CustomFilterOperator;
+}
+
+/**
+ * These basic operators are defined in 18.18.31.
+ *
+ * Some comparison such as startsWith, endsWith, contains, doesNotContain, isBlank, isNotBlank are not defined in OOXML.
+ * They are represented by regex-like values.
+ */
+export enum CustomFilterOperator {
+    EQUAL = 'equal',
+    GREATER_THAN = 'greaterThan',
+    GREATER_THAN_OR_EQUAL = 'greaterThanOrEqual',
+    LESS_THAN = 'lessThan',
+    LESS_THAN_OR_EQUAL = 'lessThanOrEqual',
+    NOT_EQUAL = 'notEqual',
+}
+
+export enum DynamicFilterOperator {
+    ABOVE_AVERAGE = 'aboveAverage',
 }

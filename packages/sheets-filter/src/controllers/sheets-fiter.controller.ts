@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-export class FilterModel {
-    worksheetId: string;
-    range: IRange[];
-}
+import { Disposable, LifecycleStages, OnLifecycle } from '@univerjs/core';
 
-export class FilterColumn {
-
-}
-
-export interface FilterRule {
+@OnLifecycle(LifecycleStages.Starting, SheetFilterController)
+export class SheetFilterController extends Disposable {
 
 }
