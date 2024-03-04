@@ -87,11 +87,6 @@ export class SheetInterceptorService extends Disposable {
                 return rawData;
             },
         });
-
-        this.intercept(INTERCEPTOR_POINT.PERMISSION, {
-            priority: -1,
-            handler: () => true,
-        });
     }
 
     override dispose(): void {
