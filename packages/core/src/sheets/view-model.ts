@@ -16,7 +16,6 @@
 
 import type { IDisposable } from '@wendellhu/redi';
 
-import { remove } from '../common/array';
 import type { Nullable } from '../common/type-utils';
 import { Disposable, toDisposable } from '../shared/lifecycle';
 import type { ICellDataForSheetInterceptor } from '../types/interfaces/i-cell-data';
@@ -42,55 +41,39 @@ export class SheetViewModel extends Disposable {
     // NOTE: maybe we don't need arrays here, and they don't work like a real interceptor
     // they are actually callbacks
 
-    private readonly _cellContentInterceptors: ICellContentInterceptor[] = [];
-    private readonly _rowFilteredInterceptors: IRowFilteredInterceptor[] = [];
+    private _cellContentInterceptor: Nullable<ICellContentInterceptor> = null;
+    private _rowFilteredInterceptor: Nullable<IRowFilteredInterceptor> = null;
 
     override dispose(): void {
         super.dispose();
 
-        this._cellContentInterceptors.length = 0;
-        this._rowFilteredInterceptors.length = 0;
+        this._cellContentInterceptor = null;
+        this._rowFilteredInterceptor = null;
     }
 
     getCell(row: number, col: number): Nullable<ICellDataForSheetInterceptor> {
-        for (const interceptor of this._cellContentInterceptors) {
-            const result = interceptor.getCell(row, col);
-            if (typeof result !== 'undefined') {
-                return result;
-            }
-        }
-
-        return null;
+        return this._cellContentInterceptor?.getCell(row, col) ?? null;
     }
 
     getRowFiltered(row: number): boolean {
-        if (this._rowFilteredInterceptors.length) {
-            for (const interceptor of this._rowFilteredInterceptors) {
-                const result = interceptor.getRowFiltered(row);
-                if (result) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return this._rowFilteredInterceptor?.getRowFiltered(row) ?? false;
     }
 
     registerCellContentInterceptor(interceptor: ICellContentInterceptor): IDisposable {
-        if (this._cellContentInterceptors.includes(interceptor)) {
+        if (this._cellContentInterceptor) {
             throw new Error('[SheetViewModel]: Interceptor already registered.');
         }
 
-        this._cellContentInterceptors.push(interceptor);
-        return toDisposable(() => remove(this._cellContentInterceptors, interceptor));
+        this._cellContentInterceptor = interceptor;
+        return toDisposable(() => this._cellContentInterceptor = null);
     }
 
     registerRowFilteredInterceptor(interceptor: IRowFilteredInterceptor): IDisposable {
-        if (this._rowFilteredInterceptors.includes(interceptor)) {
+        if (this._rowFilteredInterceptor) {
             throw new Error('[SheetViewModel]: Interceptor already registered.');
         }
 
-        this._rowFilteredInterceptors.push(interceptor);
-        return toDisposable(() => remove(this._rowFilteredInterceptors, interceptor));
+        this._rowFilteredInterceptor = interceptor;
+        return toDisposable(() => this._rowFilteredInterceptor = null);
     }
 }
