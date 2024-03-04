@@ -27,7 +27,7 @@ import {
 } from '@univerjs/core';
 import { FunctionService, IFunctionService } from '@univerjs/engine-formula';
 import { ISocketService, WebSocketService } from '@univerjs/network';
-import { SelectionManagerService, SheetInterceptorService } from '@univerjs/sheets';
+import { SelectionManagerService, SheetInterceptorService, SheetPermissionService } from '@univerjs/sheets';
 import {
     DescriptionService,
     enUS,
@@ -87,6 +87,7 @@ export function createTestBed(workbookConfig?: IWorkbookData, dependencies?: Dep
         override onStarting(injector: Injector): void {
             injector.add([SelectionManagerService]);
             injector.add([SheetInterceptorService]);
+            injector.add([SheetPermissionService]);
             injector.add([IRegisterFunctionService, { useClass: RegisterFunctionService }]);
             injector.add([
                 IDescriptionService,
