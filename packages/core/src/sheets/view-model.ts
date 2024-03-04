@@ -21,41 +21,35 @@ import type { Nullable } from '../common/type-utils';
 import { Disposable, toDisposable } from '../shared/lifecycle';
 import type { ICellDataForSheetInterceptor } from '../types/interfaces/i-cell-data';
 
+/**
+ * @intenal
+ */
 export interface ICellContentInterceptor {
     getCell(row: number, col: number): Nullable<ICellDataForSheetInterceptor>;
 }
 
-export interface IRowFilteredInterceptor {}
-
-export interface IRowVisibleInterceptor {}
-
-export interface IColVisibleInterceptor {}
-
-export interface ISheetViewModel {
-    registerCellContentInterceptor(interceptor: ICellContentInterceptor): IDisposable;
-    registerRowFilteredInterceptor(interceptor: IRowFilteredInterceptor): IDisposable;
-    registerRowVisibleInterceptor(interceptor: IRowVisibleInterceptor): IDisposable;
-    registerColVisibleInterceptor(interceptor: IColVisibleInterceptor): IDisposable;
-
-    getCell(row: number, col: number): Nullable<ICellDataForSheetInterceptor>;
+/**
+ * @intenal
+ */
+export interface IRowFilteredInterceptor {
+    getRowFiltered(row: number): boolean;
 }
 
 /**
- * SheetViewModel
+ * @internal
  */
-export class SheetViewModel extends Disposable implements ISheetViewModel {
+export class SheetViewModel extends Disposable {
+    // NOTE: maybe we don't need arrays here, and they don't work like a real interceptor
+    // they are actually callbacks
+
     private readonly _cellContentInterceptors: ICellContentInterceptor[] = [];
     private readonly _rowFilteredInterceptors: IRowFilteredInterceptor[] = [];
-    private readonly _rowVisibleInterceptors: IRowVisibleInterceptor[] = [];
-    private readonly _colVisibleInterceptors: IColVisibleInterceptor[] = [];
 
     override dispose(): void {
         super.dispose();
 
         this._cellContentInterceptors.length = 0;
         this._rowFilteredInterceptors.length = 0;
-        this._rowVisibleInterceptors.length = 0;
-        this._colVisibleInterceptors.length = 0;
     }
 
     getCell(row: number, col: number): Nullable<ICellDataForSheetInterceptor> {
@@ -67,6 +61,19 @@ export class SheetViewModel extends Disposable implements ISheetViewModel {
         }
 
         return null;
+    }
+
+    getRowFiltered(row: number): boolean {
+        if (this._rowFilteredInterceptors.length) {
+            for (const interceptor of this._rowFilteredInterceptors) {
+                const result = interceptor.getRowFiltered(row);
+                if (result) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     registerCellContentInterceptor(interceptor: ICellContentInterceptor): IDisposable {
@@ -85,23 +92,5 @@ export class SheetViewModel extends Disposable implements ISheetViewModel {
 
         this._rowFilteredInterceptors.push(interceptor);
         return toDisposable(() => remove(this._rowFilteredInterceptors, interceptor));
-    }
-
-    registerRowVisibleInterceptor(interceptor: IRowVisibleInterceptor): IDisposable {
-        if (this._rowVisibleInterceptors.includes(interceptor)) {
-            throw new Error('[SheetViewModel]: Interceptor already registered.');
-        }
-
-        this._rowVisibleInterceptors.push(interceptor);
-        return toDisposable(() => remove(this._rowVisibleInterceptors, interceptor));
-    }
-
-    registerColVisibleInterceptor(interceptor: IColVisibleInterceptor): IDisposable {
-        if (this._colVisibleInterceptors.includes(interceptor)) {
-            throw new Error('[SheetViewModel]: Interceptor already registered.');
-        }
-
-        this._colVisibleInterceptors.push(interceptor);
-        return toDisposable(() => remove(this._colVisibleInterceptors, interceptor));
     }
 }

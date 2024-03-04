@@ -275,6 +275,10 @@ export class Worksheet {
         return this.getCellMatrix().getValue(row, col);
     }
 
+    getRowFiltered(row: number): boolean {
+        return this._viewModel.getRowFiltered(row);
+    }
+
     /**
      * Get cell matrix from a given range and pick out non-first cells of merged cells.
      *
@@ -455,14 +459,18 @@ export class Worksheet {
 
     /**
      * Gets the height in pixels of the given row.
-     * @param rowPosition row index
+     * @param row row index
      * @returns Gets the height in pixels of the given row.
      */
-    getRowHeight(rowPosition: number): number {
-        return this.getRowManager().getRowHeight(rowPosition);
+    getRowHeight(row: number): number {
+        return this.getRowManager().getRowHeight(row);
     }
 
     getRowVisible(row: number): boolean {
+        if (this.getRowFiltered(row)) {
+            return false;
+        }
+
         return this.getRowManager().getRowVisible(row);
     }
 
