@@ -62,6 +62,9 @@
     "peerDependencies": {
         "@univerjs/core": "workspace:*",
         "@univerjs/design": "workspace:*",
+        "@univerjs/engine-render": "workspace:*",
+        "@univerjs/sheets-filter": "workspace:*",
+        "@univerjs/sheets-ui": "workspace:*",
         "@univerjs/ui": "workspace:*",
         "@wendellhu/redi": ">=0.12.13",
         "clsx": ">=2.0.0",
@@ -74,7 +77,10 @@
     "devDependencies": {
         "@univerjs/core": "workspace:*",
         "@univerjs/design": "workspace:*",
+        "@univerjs/engine-render": "workspace:*",
         "@univerjs/shared": "workspace:*",
+        "@univerjs/sheets-filter": "workspace:*",
+        "@univerjs/sheets-ui": "workspace:*",
         "@univerjs/ui": "workspace:*",
         "@wendellhu/redi": "^0.13.0",
         "clsx": "^2.1.0",

@@ -19,17 +19,17 @@ import type { Nullable } from '../shared/types';
 import { BooleanNumber } from '../types/enum';
 import type { IRange, IRowData, IWorksheetData } from '../types/interfaces';
 import { RANGE_TYPE } from '../types/interfaces';
+import type { SheetViewModel } from './view-model';
 
 /**
  * Manage configuration information of all rows, get row height, row length, set row height, etc.
- *
- * @deprecated This class is not necessary. It increases the complexity of the code and does not bring any benefits.
  */
 export class RowManager {
     private _rowData: IObjectArrayPrimitiveType<Partial<IRowData>>;
 
     constructor(
         private readonly _config: IWorksheetData,
+        private readonly _viewModel: SheetViewModel,
         data: IObjectArrayPrimitiveType<Partial<IRowData>>
     ) {
         this._rowData = data;
@@ -173,13 +173,17 @@ export class RowManager {
         return visibleRows;
     }
 
-    getRowVisible(rowPos: number): boolean {
-        const row = this.getRow(rowPos);
-        if (!row) {
+    getRowVisible(row: number): boolean {
+        if (this._viewModel.getRowFiltered(row)) {
+            return false;
+        }
+
+        const rowData = this.getRow(row);
+        if (!rowData) {
             return true;
         }
 
-        return row.hd !== BooleanNumber.TRUE;
+        return rowData.hd !== BooleanNumber.TRUE;
     }
 
     /**

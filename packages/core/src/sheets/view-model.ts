@@ -21,14 +21,14 @@ import { Disposable, toDisposable } from '../shared/lifecycle';
 import type { ICellData, ICellDataForSheetInterceptor } from '../types/interfaces/i-cell-data';
 
 /**
- * @intenal
+ * @internal
  */
 export interface ICellContentInterceptor {
     getCell(row: number, col: number): Nullable<ICellDataForSheetInterceptor>;
 }
 
 /**
- * @intenal
+ * @internal
  */
 export interface IRowFilteredInterceptor {
     getRowFiltered(row: number): boolean;

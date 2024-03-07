@@ -21,6 +21,8 @@ import { UniverDocsUIPlugin } from '@univerjs/docs-ui';
 import { UniverFormulaEnginePlugin } from '@univerjs/engine-formula';
 import { UniverRenderEnginePlugin } from '@univerjs/engine-render';
 import { UniverFindReplacePlugin } from '@univerjs/find-replace';
+import { UniverSheetsFilterPlugin } from '@univerjs/sheets-filter';
+import { UniverSheetsFilterUIPlugin } from '@univerjs/sheets-filter-ui';
 import type { IUniverRPCMainThreadConfig } from '@univerjs/rpc';
 import { UniverRPCMainThreadPlugin } from '@univerjs/rpc';
 import { UniverSheetsPlugin } from '@univerjs/sheets';
@@ -79,6 +81,10 @@ univer.registerPlugin(UniverRPCMainThreadPlugin, {
 // find replace
 univer.registerPlugin(UniverFindReplacePlugin);
 univer.registerPlugin(UniverSheetsFindPlugin);
+
+// filter
+univer.registerPlugin(UniverSheetsFilterPlugin);
+univer.registerPlugin(UniverSheetsFilterUIPlugin);
 
 // create univer sheet instance
 univer.createUniverSheet(DEFAULT_WORKBOOK_DATA_DEMO);

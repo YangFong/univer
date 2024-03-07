@@ -14,9 +14,58 @@
  * limitations under the License.
  */
 
-import type { IMutation } from '@univerjs/core';
+// This file provides a ton of mutations to manipulate `FilterModel`. These models would be held on
+// `SheetFilterService`.
 
-export interface ISetSheetsFilterMutation {
+import { CommandType } from '@univerjs/core';
+import type { IFilterColumn, IMutation, IRange } from '@univerjs/core';
+import type { ISheetCommandSharedParams } from '@univerjs/sheets';
+
+import { SheetFilterService } from '../services/sheet-filter.service';
+
+export interface ISetSheetFilterMutationParams extends ISheetCommandSharedParams {
+    range: IRange;
+}
+/**
+ * Set filter range of a Worksheet.
+ */
+export const SetSheetFilterRangeMutation: IMutation<ISetSheetFilterMutationParams> = {
+    id: 'sheet.mutation.set-filter-range',
+    type: CommandType.MUTATION,
+    handler: (accessor, params) => {
+        const { subUnitId, unitId, range } = params;
+        const sheetFilterService = accessor.get(SheetFilterService);
+        const filterModel = sheetFilterService.ensureFilterModel(unitId, subUnitId);
+        filterModel.setRange(range);
+        return true;
+    },
+};
+
+export interface ISetSheetFilterConditionMutationParams extends ISheetCommandSharedParams {
+    condition: IFilterColumn;
+}
+/**
+ * Set filter condition of a Worksheet.
+ */
+export const SetSheetFilterConditionMutation: IMutation<ISetSheetFilterConditionMutationParams> = {
+    id: 'sheet.mutation.set-filter-condition',
+    type: CommandType.MUTATION,
+    handler: (accessor, params) => {
+        const { subUnitId, unitId, condition } = params;
+        const sheetFilterService = accessor.get(SheetFilterService);
+
+        return true;
+    },
+};
+
+export interface IRemoveSheetFilterMutationParams extends ISheetCommandSharedParams {
 
 }
-export const SetSheetsFilterMutation: IMutation = {};
+export const RemoveSheetFilterMutation: IMutation<IRemoveSheetFilterMutationParams> = {
+    id: 'sheet.mutation.remove-filter',
+    type: CommandType.MUTATION,
+    handler: (accessor, params) => {
+        const sheetFilterService = accessor.get(SheetFilterService);
+        return true;
+    },
+};

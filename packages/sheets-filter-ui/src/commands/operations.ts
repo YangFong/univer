@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { Disposable, LifecycleStages, OnLifecycle } from '@univerjs/core';
+import { CommandType, type IOperation } from '@univerjs/core';
 
-@OnLifecycle(LifecycleStages.Starting, SheetFilterController)
-export class SheetFilterController extends Disposable {
-
-}
+export const OpenFilterPanelOperation: IOperation = {
+    id: 'sheet.operation.open-filter-panel',
+    type: CommandType.OPERATION,
+    handler: () => true,
+};

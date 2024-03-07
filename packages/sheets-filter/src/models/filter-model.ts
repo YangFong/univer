@@ -91,11 +91,21 @@ export class FilterModel extends Disposable {
 
     private _dump(autoFilter: IAutoFilter) {
         this.setRange(autoFilter.ref);
-        autoFilter.filterColumns.forEach((filterColumn) => this._setConditionWithoutReCalc(filterColumn.colId, filterColumn));
+
+        autoFilter.filterColumns?.forEach((filterColumn) => this._setConditionWithoutReCalc(filterColumn.colId, filterColumn));
+
         if (autoFilter.cachedFilteredOut) {
             this._alreadyFilteredOutRows = new Set(autoFilter.cachedFilteredOut);
             this._emit();
         }
+    }
+
+    isRowFiltered(row: number): boolean {
+        return this._alreadyFilteredOutRows.has(row);
+    }
+
+    getRange(): Nullable<IRange> {
+        return this._range;
     }
 
     /**
@@ -132,6 +142,10 @@ export class FilterModel extends Disposable {
         this._rebuildAlreadyFilteredOutRowsCacheWithout(col);
         this._reCalcWithNoCacheColumns();
         this._emit();
+    }
+
+    getFilterColumn(offset: number): Nullable<FilterColumn> {
+        return this._filterColumnByOffset.get(offset) ?? null;
     }
 
     private _setConditionWithoutReCalc(col: number, condition: Nullable<IFilterColumn>): void {

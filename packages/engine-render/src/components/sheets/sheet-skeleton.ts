@@ -14,6 +14,21 @@
  * limitations under the License.
  */
 
+import {
+
+    BooleanNumber,
+    CellValueType,
+    DEFAULT_EMPTY_DOCUMENT_VALUE,
+    DocumentDataModel,
+    getColorStyle,
+    HorizontalAlign,
+    isEmptyCell,
+    isNullCell,
+    ObjectMatrix,
+    searchArray,
+    Tools,
+    VerticalAlign,
+    WrapStrategy } from '@univerjs/core';
 import type {
     IBorderStyleData,
     ICellData,
@@ -34,23 +49,7 @@ import type {
     Nullable,
     Styles,
     TextDirection,
-    Worksheet,
-} from '@univerjs/core';
-import {
-    BooleanNumber,
-    CellValueType,
-    DEFAULT_EMPTY_DOCUMENT_VALUE,
-    DocumentDataModel,
-    getColorStyle,
-    HorizontalAlign,
-    isEmptyCell,
-    isNullCell,
-    ObjectMatrix,
-    searchArray,
-    Tools,
-    VerticalAlign,
-    WrapStrategy,
-} from '@univerjs/core';
+    Worksheet } from '@univerjs/core';
 
 import { BORDER_TYPE, COLOR_BLACK_RGB, MAXIMUM_ROW_HEIGHT } from '../../basics/const';
 import { getRotateOffsetAndFarthestHypotenuse } from '../../basics/draw';
@@ -228,7 +227,11 @@ export class SpreadsheetSkeleton extends Skeleton {
 
     constructor(
         private _worksheet: Worksheet | undefined,
-        private _config: IWorksheetData,
+        /**
+         * @deprecated avoid use `IWorksheetData` directly, use API provided by `Worksheet`, otherwise
+         * `ViewModel` will be not working.
+         */
+        private _worksheetData: IWorksheetData,
         private _cellData: ObjectMatrix<Nullable<ICellData>>,
         private _styles: Styles,
         _localeService: LocaleService
@@ -284,7 +287,7 @@ export class SpreadsheetSkeleton extends Skeleton {
     }
 
     get mergeData() {
-        return this._config.mergeData;
+        return this._worksheetData.mergeData;
     }
 
     get rowHeaderWidthAndMarginLeft() {
@@ -316,7 +319,7 @@ export class SpreadsheetSkeleton extends Skeleton {
      * @deprecated should never expose a property that is provided by another module!
      */
     getWorksheetConfig() {
-        return this._config;
+        return this._worksheetData;
     }
 
     /**
@@ -346,7 +349,7 @@ export class SpreadsheetSkeleton extends Skeleton {
     }
 
     calculateSegment(bounds?: IViewportBound) {
-        if (!this._config) {
+        if (!this._worksheetData) {
             return;
         }
 
@@ -368,7 +371,7 @@ export class SpreadsheetSkeleton extends Skeleton {
             return;
         }
 
-        const { mergeData } = this._config;
+        const { mergeData } = this._worksheetData;
 
         this._dataMergeCache = mergeData && this._getMergeCells(mergeData, this._rowColumnSegment);
 
@@ -391,7 +394,7 @@ export class SpreadsheetSkeleton extends Skeleton {
         }
 
         const results: IRowAutoHeightInfo[] = [];
-        const { mergeData, rowData } = this._config;
+        const { mergeData, rowData } = this._worksheetData;
         const rowObjectArray = rowData;
 
         for (const range of ranges) {
@@ -425,7 +428,7 @@ export class SpreadsheetSkeleton extends Skeleton {
     }
 
     private _calculateRowAutoHeight(rowNum: number): number {
-        const { columnCount, columnData, mergeData, defaultRowHeight } = this._config;
+        const { columnCount, columnData, mergeData, defaultRowHeight } = this._worksheetData;
         const data = columnData;
         let height = defaultRowHeight;
 
@@ -512,7 +515,7 @@ export class SpreadsheetSkeleton extends Skeleton {
             rowHeader,
             columnHeader,
             showGridlines,
-        } = this._config;
+        } = this._worksheetData;
         const { rowTotalHeight, rowHeightAccumulation } = this._generateRowMatrixCache(
             rowCount,
             rowData,
@@ -553,7 +556,7 @@ export class SpreadsheetSkeleton extends Skeleton {
     }
 
     getMergeBounding(startRow: number, startColumn: number, endRow: number, endColumn: number) {
-        const mergeData = this._config.mergeData;
+        const mergeData = this._worksheetData.mergeData;
         if (!mergeData) {
             return {
                 startRow,
@@ -907,7 +910,7 @@ export class SpreadsheetSkeleton extends Skeleton {
             column,
             rowHeightAccumulation,
             columnWidthAccumulation,
-            this._config.mergeData
+            this._worksheetData.mergeData
         );
         const { isMerged, isMergedMainCell } = primary;
         let { startY, endY, startX, endX, mergeInfo } = primary;
@@ -940,7 +943,7 @@ export class SpreadsheetSkeleton extends Skeleton {
             column,
             rowHeightAccumulation,
             columnWidthAccumulation,
-            this._config.mergeData
+            this._worksheetData.mergeData
         );
         const { isMerged, isMergedMainCell } = primary;
         const { startY, endY, startX, endX, mergeInfo } = primary;
@@ -1324,12 +1327,14 @@ export class SpreadsheetSkeleton extends Skeleton {
         for (let r = 0; r < rowCount; r++) {
             let rowHeight = defaultRowHeight;
 
-            if (data[r] != null) {
+            if (this._worksheet?.getRowFiltered(r)) {
+                rowHeight = 0;
+            } else if (data[r] != null) {
                 const rowDataItem = data[r];
-
                 if (!rowDataItem) {
                     continue;
                 }
+
                 const { h = defaultRowHeight, ah, ia } = rowDataItem;
                 if ((ia == null || ia === BooleanNumber.TRUE) && typeof ah === 'number') {
                     rowHeight = ah;

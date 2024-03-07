@@ -23,7 +23,8 @@ import type { IRange } from './i-range';
 
 export interface IAutoFilter {
     ref: IRange;
-    filterColumns: IFilterColumn[];
+
+    filterColumns?: IFilterColumn[];
 
     cachedFilteredOut?: number[];
 }

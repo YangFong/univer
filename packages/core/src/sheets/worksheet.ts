@@ -51,11 +51,11 @@ export class Worksheet {
         this._sheetId = this._snapshot.id ?? Tools.generateRandomId(6);
         this._initialized = false;
         this._cellData = new ObjectMatrix<ICellData>(cellData);
-        this._rowManager = new RowManager(this._snapshot, rowData);
-        this._columnManager = new ColumnManager(this._snapshot, columnData);
 
         // This view model will immediately injected with hooks from SheetViewModel service as Worksheet is constructed.
         this._viewModel = new SheetViewModel((row, col) => this.getCellRaw(row, col));
+        this._rowManager = new RowManager(this._snapshot, this._viewModel, rowData);
+        this._columnManager = new ColumnManager(this._snapshot, columnData);
     }
 
     /**
@@ -466,10 +466,6 @@ export class Worksheet {
     }
 
     getRowVisible(row: number): boolean {
-        if (this.getRowFiltered(row)) {
-            return false;
-        }
-
         return this.getRowManager().getRowVisible(row);
     }
 
