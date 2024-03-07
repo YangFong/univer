@@ -43,11 +43,39 @@ export class SheetFilterService extends Disposable {
      * @param subUnitId
      */
     ensureFilterModel(unitId: string, subUnitId: string): FilterModel {
+        const already = this.getFilterModel(unitId, subUnitId);
+        if (already) {
+            return already;
+        }
 
+        const workbook = this._univerInstanceService.getUniverSheetInstance(unitId);
+        if (!workbook) {
+            throw new Error(`[SheetFilterService]: could not create "FilterModel" on a non-existing workbook ${unitId}!`);
+        }
+
+        const worksheet = workbook.getSheetBySheetId(subUnitId);
+        if (!worksheet) {
+            throw new Error(`[SheetFilterService]: could not create "FilterModel" on a non-existing worksheet ${subUnitId}!`);
+        }
+
+        const filterModel = new FilterModel(unitId, subUnitId, worksheet);
+        this._cacheFilterModel(unitId, subUnitId, filterModel);
+        return filterModel;
     }
 
     getFilterModel(unitId: string, subUnitId: string): Nullable<FilterModel> {
         return this._filterModels.get(unitId)?.get(subUnitId) ?? null;
+    }
+
+    removeFilterModel(unitId: string, subUnitId: string): boolean {
+        const already = this.getFilterModel(unitId, subUnitId);
+        if (already) {
+            already.dispose();
+            this._filterModels.get(unitId)!.delete(subUnitId);
+            return true;
+        }
+
+        return false;
     }
 
     private _initModel() {
@@ -58,9 +86,8 @@ export class SheetFilterService extends Disposable {
                 const autoFilter = worksheet.getSnapshot().autoFilter;
                 if (autoFilter) {
                     const subUnitId = worksheet.getSheetId();
-                    this._logService.warn('[SheetFilterService]: autoFilter is not null, but not implemented yet.');
                     const filterModel = FilterModel.deserialize(unitId, subUnitId, worksheet, autoFilter);
-                    this._initFilterModel(unitId, subUnitId, filterModel);
+                    this._cacheFilterModel(unitId, subUnitId, filterModel);
                 }
             });
         };
@@ -68,12 +95,17 @@ export class SheetFilterService extends Disposable {
         this.disposeWithMe(toDisposable(this._univerInstanceService.sheetAdded$.subscribe(handlerWorkbookAdd)));
         this.disposeWithMe(
             this._univerInstanceService.sheetDisposed$.subscribe((workbook: Workbook) => {
-                // TODO@wzhudev: clear all filter model of this workbook
+                const unitId = workbook.getUnitId();
+                const allFilterModels = this._filterModels.get(unitId);
+                if (allFilterModels) {
+                    allFilterModels.forEach((model) => model.dispose());
+                    this._filterModels.delete(unitId);
+                }
             })
         );
     }
 
-    private _initFilterModel(unitId: string, subUnitId: string, filterModel: FilterModel) {
+    private _cacheFilterModel(unitId: string, subUnitId: string, filterModel: FilterModel) {
         if (!this._filterModels.has(unitId)) {
             this._filterModels.set(unitId, new Map());
         }

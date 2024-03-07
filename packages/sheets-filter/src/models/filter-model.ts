@@ -138,6 +138,8 @@ export class FilterModel extends Disposable {
             throw new Error('[FilterModel] could not set condition before a range is set!');
         }
 
+        // TODO@wzhudev: implement removing FilterColumn
+
         this._setConditionWithoutReCalc(col, condition);
         this._rebuildAlreadyFilteredOutRowsCacheWithout(col);
         this._reCalcWithNoCacheColumns();

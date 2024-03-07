@@ -18,7 +18,7 @@
 // `SheetFilterService`.
 
 import { CommandType } from '@univerjs/core';
-import type { IFilterColumn, IMutation, IRange } from '@univerjs/core';
+import type { IFilterColumn, IMutation, IRange, Nullable } from '@univerjs/core';
 import type { ISheetCommandSharedParams } from '@univerjs/sheets';
 
 import { SheetFilterService } from '../services/sheet-filter.service';
@@ -42,7 +42,8 @@ export const SetSheetFilterRangeMutation: IMutation<ISetSheetFilterMutationParam
 };
 
 export interface ISetSheetFilterConditionMutationParams extends ISheetCommandSharedParams {
-    condition: IFilterColumn;
+    colId: number;
+    condition: Nullable<IFilterColumn>;
 }
 /**
  * Set filter condition of a Worksheet.
@@ -51,21 +52,26 @@ export const SetSheetFilterConditionMutation: IMutation<ISetSheetFilterCondition
     id: 'sheet.mutation.set-filter-condition',
     type: CommandType.MUTATION,
     handler: (accessor, params) => {
-        const { subUnitId, unitId, condition } = params;
+        const { subUnitId, unitId, condition, colId } = params;
         const sheetFilterService = accessor.get(SheetFilterService);
 
+        const filterModel = sheetFilterService.getFilterModel(unitId, subUnitId);
+        if (!filterModel) {
+            return false;
+        }
+
+        filterModel.setCondition(colId, condition);
         return true;
     },
 };
 
-export interface IRemoveSheetFilterMutationParams extends ISheetCommandSharedParams {
-
-}
+export interface IRemoveSheetFilterMutationParams extends ISheetCommandSharedParams {}
 export const RemoveSheetFilterMutation: IMutation<IRemoveSheetFilterMutationParams> = {
     id: 'sheet.mutation.remove-filter',
     type: CommandType.MUTATION,
     handler: (accessor, params) => {
+        const { unitId, subUnitId } = params;
         const sheetFilterService = accessor.get(SheetFilterService);
-        return true;
+        return sheetFilterService.removeFilterModel(unitId, subUnitId);
     },
 };
