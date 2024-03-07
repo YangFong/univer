@@ -39,8 +39,6 @@ export const ReplaceAllMatchesCommand: ICommand = {
         const localeService = accessor.get(LocaleService);
         const messageService = accessor.get(IMessageService);
 
-        // NOTE: check if there are matches could be replaced?
-
         if (!await confirmService.confirm({
             id: CONFIRM_REPLACE_ALL_ID,
             title: { title: localeService.t('find-replace.replace.confirm.title') },

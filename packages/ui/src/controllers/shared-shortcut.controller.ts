@@ -23,7 +23,6 @@ import { IMenuService } from '../services/menu/menu.service';
 import { KeyCode, MetaKeys } from '../services/shortcut/keycode';
 import type { IShortcutItem } from '../services/shortcut/shortcut.service';
 import { IShortcutService } from '../services/shortcut/shortcut.service';
-import { IClipboardInterfaceService } from '../services/clipboard/clipboard-interface.service';
 import { SetEditorResizeOperation } from '../commands/operations/editor/set-editor-resize.operation';
 import { RedoMenuItemFactory, UndoMenuItemFactory } from './menus/menus';
 
@@ -40,10 +39,7 @@ export const CopyShortcutItem: IShortcutItem = {
     description: 'shortcut.copy',
     group: '1_common-edit',
     binding: KeyCode.C | MetaKeys.CTRL_COMMAND,
-<<<<<<< HEAD
-=======
     preconditions: whenEditorFocused,
->>>>>>> 62e37956c (fix(design): fix checkbox onChange)
 };
 
 export const CutShortcutItem: IShortcutItem = {
@@ -51,10 +47,7 @@ export const CutShortcutItem: IShortcutItem = {
     description: 'shortcut.cut',
     group: '1_common-edit',
     binding: KeyCode.X | MetaKeys.CTRL_COMMAND,
-<<<<<<< HEAD
-=======
     preconditions: whenEditorFocused,
->>>>>>> 62e37956c (fix(design): fix checkbox onChange)
 };
 
 /**
@@ -65,11 +58,7 @@ export const OnlyDisplayPasteShortcutItem: IShortcutItem = {
     description: 'shortcut.paste',
     group: '1_common-edit',
     binding: KeyCode.V | MetaKeys.CTRL_COMMAND,
-<<<<<<< HEAD
     preconditions: () => false,
-=======
-    preconditions: whenEditorFocused,
->>>>>>> 62e37956c (fix(design): fix checkbox onChange)
 };
 
 // For compatibility issues, paste from the shortcut should always go with the native paste event,

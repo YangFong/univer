@@ -44,6 +44,7 @@ const locale = {
                 'current-sheet': 'Current Sheet',
                 workbook: 'Workbook',
                 range: 'Dedicated Range',
+                'range-selector': 'Select Range',
             },
             'find-by': {
                 title: 'Find By',

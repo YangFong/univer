@@ -41,6 +41,7 @@ const locale: typeof enUS = {
                 'current-sheet': '当前子表',
                 workbook: '整个工作簿',
                 range: '指定范围',
+                'range-selector': '选择范围',
             },
             'find-direction': {
                 title: '查找顺序',

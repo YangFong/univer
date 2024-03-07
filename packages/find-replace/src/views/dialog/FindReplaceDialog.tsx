@@ -15,9 +15,9 @@
  */
 
 import { Button, Checkbox, FormLayout, Input, InputWithSlot, MessageType, Pager, Select } from '@univerjs/design';
-import { ILayoutService, IMessageService, useObservable } from '@univerjs/ui';
-import type { Nullable } from '@univerjs/core';
-import { ICommandService, IContextService, LocaleService } from '@univerjs/core';
+import { ILayoutService, IMessageService, RangeSelector, useActiveWorkbook, useActiveWorksheet, useObservable } from '@univerjs/ui';
+import type { IUnitRange, Nullable } from '@univerjs/core';
+import { ICommandService, IContextService, IUniverInstanceService, LocaleService } from '@univerjs/core';
 import type { IDisposable } from '@wendellhu/redi';
 import { useDependency } from '@wendellhu/redi/react-bindings';
 import type { ForwardedRef } from 'react';
@@ -25,11 +25,13 @@ import React, { forwardRef, Fragment, useCallback, useEffect, useImperativeHandl
 import { fromEvent } from 'rxjs';
 
 import { FormDualColumnLayout } from '@univerjs/design/components/form-layout/FormLayout.js';
+import { serializeRangeWithSpreadsheet } from '@univerjs/engine-formula';
 import { FindBy, FindDirection, FindScope, IFindReplaceService } from '../../services/find-replace.service';
 import { FIND_REPLACE_DIALOG_FOCUS, FIND_REPLACE_INPUT_FOCUS } from '../../services/context-keys';
 import { ReplaceAllMatchesCommand, ReplaceCurrentMatchCommand } from '../../commands/command/replace.command';
-import styles from './Dialog.module.less';
 import { SearchInput } from './SearchInput';
+
+import styles from './FindReplaceDialog.module.less';
 
 interface ISubFormRef {
     focus(): void;
@@ -93,9 +95,10 @@ export const ReplaceDialog = forwardRef(function ReplaceDIalogImpl(_props, ref) 
     const localeService = useDependency(LocaleService);
     const commandService = useDependency(ICommandService);
     const messageService = useDependency(IMessageService);
+    const univerInstanceService = useDependency(IUniverInstanceService);
 
     const currentMatch = useObservable(findReplaceService.currentMatch$, undefined, true);
-    const replcaeables = useObservable(findReplaceService.replaceables$, undefined, true);
+    const replaceables = useObservable(findReplaceService.replaceables$, undefined, true);
     const state = useObservable(findReplaceService.state$, undefined, true);
     const {
         matchesCount,
@@ -109,11 +112,17 @@ export const ReplaceDialog = forwardRef(function ReplaceDIalogImpl(_props, ref) 
         findScope,
         findBy,
         findCompleted,
+        dedicatedRange,
     } = state;
 
-    const findDisabled = inputtingFindString.length === 0;
+    const findDisabled = inputtingFindString.length === 0 || (findScope === FindScope.RANGE && !dedicatedRange);
     const replaceDisabled = matchesCount === 0 || !currentMatch?.replaceable;
-    const replaceAllDisabled = !findCompleted || replcaeables.length === 0;
+    const replaceAllDisabled = !findCompleted || replaceables.length === 0;
+
+    const activeWorkbook = useActiveWorkbook();
+    const activeWorksheet = useActiveWorksheet();
+    const activeWorkbookId = activeWorkbook?.getUnitId();
+    const activeWorkSheetId = activeWorksheet?.getSheetId();
 
     const onFindStringChange = useCallback(
         (newValue: string) => findReplaceService.changeInputtingFindString(newValue),
@@ -134,6 +143,15 @@ export const ReplaceDialog = forwardRef(function ReplaceDIalogImpl(_props, ref) 
     }, [findString, inputtingFindString, findReplaceService]);
     const onClickReplaceButton = useCallback(() => commandService.executeCommand(ReplaceCurrentMatchCommand.id), [commandService]);
     const onClickReplaceAllButton = useCallback(() => commandService.executeCommand(ReplaceAllMatchesCommand.id), [commandService]);
+
+    const onChangeFindRange = useCallback((unitRanges: IUnitRange[]) => {
+        if (unitRanges.length && activeWorkbook && activeWorksheet) {
+            const firstRange = unitRanges[0];
+            const { range } = firstRange;
+            const sheetName = activeWorksheet.getName();
+            findReplaceService.changeDedicatedRange(serializeRangeWithSpreadsheet(activeWorkbook.getUnitId(), sheetName, range));
+        }
+    }, [findReplaceService, activeWorkbook, activeWorksheet]);
     const onChangeFindDirection = useCallback((findDirection: string) => {
         findReplaceService.changeFindDirection(findDirection as FindDirection);
     }, [findReplaceService]);
@@ -147,7 +165,6 @@ export const ReplaceDialog = forwardRef(function ReplaceDIalogImpl(_props, ref) 
     const findScopeOptions = useFindScopeOptions(localeService);
     const findDirectionOptions = useFindDirectionOptions(localeService);
     const findByOptions = useFindByOptions(localeService);
-
     useFindInputFocus(findReplaceService, ref);
 
     useEffect(() => {
@@ -203,7 +220,16 @@ export const ReplaceDialog = forwardRef(function ReplaceDIalogImpl(_props, ref) 
                             <FormLayout label={localeService.t('find-replace.dialog.find-scope.title')}>
                                 <Select value={findScope} options={findScopeOptions} onChange={onChangeFindScope}></Select>
                             </FormLayout>
-                            RANGE_SELECTOR
+                            <FormLayout label={localeService.t('find-replace.dialog.find-scope.range-selector')}>
+                                <RangeSelector
+                                    id="sheet-find-replace"
+                                    openForSheetUnitId={activeWorkbookId}
+                                    openForSheetSubUnitId={activeWorkSheetId}
+                                    onChange={onChangeFindRange}
+                                    isSingleChoice
+                                >
+                                </RangeSelector>
+                            </FormLayout>
                         </Fragment>
                     </FormDualColumnLayout>
                 )}
@@ -272,7 +298,8 @@ export function FindReplaceDialog() {
         [contextService]);
     const setDialogInputFocus = useCallback(
         (focused: boolean) => contextService.setContextValue(FIND_REPLACE_INPUT_FOCUS, focused)
-        , []);
+        , [contextService]);
+
     useEffect(() => {
         const focusSubscription = fromEvent(document, 'focusin').subscribe((event) => {
             if (event.target && dialogContainerRef.current?.contains(event.target as Node)) {
@@ -298,7 +325,7 @@ export function FindReplaceDialog() {
             focusSubscription.unsubscribe();
             setDialogContainerFocus(false);
         };
-    }, [setDialogContainerFocus]);
+    }, [setDialogContainerFocus, setDialogInputFocus]);
 
     return (
         <div className={styles.findReplaceDialogContainer} ref={dialogContainerRef}>

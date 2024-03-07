@@ -67,12 +67,12 @@ export abstract class FindModel extends Disposable {
     abstract moveToPreviousMatch(params?: IFindMoveParams): IFindMatch | null;
 
     /** Replace the currently focused matching if there is one. */
-    abstract replace(): Promise<boolean>;
+    abstract replace(replaceString: string): Promise<boolean>;
 
     /**
      * Replace all matches. This method would return how many
      */
-    abstract replaceAll(): Promise<IReplaceAllResult>;
+    abstract replaceAll(replaceString: string): Promise<IReplaceAllResult>;
 }
 
 /**
@@ -157,7 +157,13 @@ export const IFindReplaceService = createIdentifier<IFindReplaceService>('find-r
  */
 export interface IFindQuery extends Pick<
     IFindReplaceState,
-    'findString' | 'replaceString' | 'caseSensitive' | 'findBy' | 'findDirection' | 'findScope' | 'matchesTheWholeCell'
+    | 'findString'
+    | 'caseSensitive'
+    | 'findBy'
+    | 'findDirection'
+    | 'findScope'
+    | 'matchesTheWholeCell'
+    | 'dedicatedRange'
 > { }
 
 function shouldStateUpdateTriggerResearch(statusUpdate: Partial<IFindReplaceState>): boolean {
@@ -168,81 +174,8 @@ function shouldStateUpdateTriggerResearch(statusUpdate: Partial<IFindReplaceStat
     if (typeof statusUpdate.caseSensitive !== 'undefined') return true;
     if (typeof statusUpdate.findScope !== 'undefined') return true;
     if (typeof statusUpdate.findBy !== 'undefined') return true;
+    if (typeof statusUpdate.dedicatedRange !== 'undefined') return true;
     return false;
-}
-
-/**
- * This class stores find replace options state. These state are stored
- * here instead of the React component so we can change state from
- * operations.
- */
-export class FindReplaceState {
-    private readonly _stateUpdates$ = new Subject<Partial<IFindReplaceState>>();
-    readonly stateUpdates$: Observable<Partial<IFindReplaceState>> = this._stateUpdates$.asObservable();
-
-    private readonly _state$ = new BehaviorSubject<IFindReplaceState>(createInitFindReplaceState());
-    readonly state$ = this._state$.asObservable();
-    get state(): IFindReplaceState {
-        return this._state$.getValue();
-    }
-
-    // TODO@wzhudev: put all state properties here
-    private _findString: string = '';
-    private _revealed = false;
-    private _replaceRevealed = false;
-    private _matchesPosition = 0;
-    private _matchesCount = 0;
-
-    get findString(): string {
-        return this._findString;
-    }
-
-    changeState(changes: Partial<IFindReplaceState>): void {
-        let changed = false;
-        const changedState: Partial<IFindReplaceState> = {};
-
-        if (typeof changes.findString !== 'undefined' && changes.findString !== this._findString) {
-            this._findString = changes.findString;
-            changedState.findString = this._findString;
-            changed = true;
-        }
-
-        if (typeof changes.revealed !== 'undefined' && changes.revealed !== this._revealed) {
-            this._revealed = changes.revealed;
-            changedState.revealed = changes.revealed;
-            changed = true;
-        }
-
-        if (typeof changes.replaceRevealed !== 'undefined' && changes.replaceRevealed !== this._replaceRevealed) {
-            this._replaceRevealed = changes.replaceRevealed;
-            changedState.replaceRevealed = changes.replaceRevealed;
-            changed = true;
-        }
-
-        if (typeof changes.matchesCount !== 'undefined' && changes.matchesCount !== this._matchesCount) {
-            this._matchesCount = changes.matchesCount;
-            changedState.matchesCount = changes.matchesCount;
-            changed = true;
-        }
-
-        if (typeof changes.matchesPosition !== 'undefined' && changes.matchesPosition !== this._matchesPosition) {
-            this._matchesPosition = changes.matchesPosition;
-            changedState.matchesPosition = changes.matchesPosition;
-            changed = true;
-            // TODO@wzhudev: maybe we should recalc matches position according to the current selections position
-        }
-
-        if (changed) {
-            this._stateUpdates$.next(changedState);
-            this._state$.next({
-                findString: this._findString,
-                revealed: this._revealed,
-                replaceRevealed: this._replaceRevealed,
-                matchesCount: this._matchesCount,
-                matchesPosition: this._matchesPosition,
-            });
-        }
-    }
 }
 
 /**
@@ -299,7 +232,7 @@ export class FindReplaceModel extends Disposable {
         this.currentMatch$.complete();
         this.replaceables$.complete();
 
-        this._state.changeState(createInitFindReplaceState());
+        this._state.changeState({ ...createInitFindReplaceState(), revealed: false });
     }
 
     async start(): Promise<IFindComplete> {
@@ -325,9 +258,9 @@ export class FindReplaceModel extends Disposable {
                 findDirection: this._state.findDirection,
                 findScope: this._state.findScope,
                 findBy: this._state.findBy,
-                replaceString: this._state.replaceString,
                 caseSensitive: this._state.caseSensitive,
                 matchesTheWholeCell: this._state.matchesTheWholeCell,
+                dedicatedRange: this._state.dedicatedRange,
             })))
         ).flat());
 
@@ -400,16 +333,22 @@ export class FindReplaceModel extends Disposable {
             return false;
         }
 
-        return this._matchingModel.replace();
+        return this._matchingModel.replace(this._state.replaceString);
     }
 
     async replaceAll(): Promise<IReplaceAllResult> {
-        return Promise.all(this._findModels.map((m) => m.replaceAll()))
+        const result = await Promise.all(this._findModels.map((m) => m.replaceAll(this._state.replaceString)))
             .then((results) => results.reduce((acc, cur) => {
                 acc.success += cur.success;
                 acc.failure += cur.failure;
                 return acc;
             }, { success: 0, failure: 0 }));
+
+        if (result.failure === 0) {
+            this._stopSearching();
+        }
+
+        return result;
     }
 
     getCurrentMatch(): Nullable<IFindMatch> {
@@ -492,10 +431,6 @@ export class FindReplaceModel extends Disposable {
         this.currentMatch$.next(nextMatch);
         return matchPosition;
     }
-
-    private _reset(): void {
-
-    }
 }
 
 export enum FindDirection {
@@ -516,8 +451,6 @@ export enum FindScope {
     UNIT = 'unit',
     /** Find only in given ranges. */
     RANGE = 'range',
-    // Not available yet.
-    // PROJECT = 'project',
 }
 
 export interface IFindReplaceState {
@@ -565,8 +498,6 @@ function createInitFindReplaceState(): IFindReplaceState {
     };
 }
 
-<<<<<<< HEAD
-=======
 /**
  * This class stores find replace options state. These state are stored
  * here instead of the React component so we can change state from
@@ -722,7 +653,6 @@ export class FindReplaceState {
     }
 }
 
->>>>>>> a85e88791 (fix: fix shortcut on macOS)
 // Since Univer' Find&Replace features works in a plugin manner,
 // each `IFind&Replace` provider should have their own implementations
 // of 'state' and 'model'.
@@ -858,7 +788,12 @@ export class FindReplaceService extends Disposable implements IFindReplaceServic
             throw new Error('[FindReplaceService] replaceAll: model is not initialized!');
         }
 
-        return this._model.replaceAll();
+        const result = await this._model.replaceAll();
+        if (result.failure === 0) {
+            this.terminate();
+        }
+
+        return result;
     }
 
     revealReplace(): void {

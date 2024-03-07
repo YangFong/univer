@@ -99,6 +99,12 @@ export interface IGridRange {
     range: IRange;
 }
 
+export interface IUnitRangeName {
+    unitId: string;
+    sheetName: string;
+    range: IRange;
+}
+
 /**
  * Range data of Unit
  */

@@ -24,6 +24,7 @@ import { SelectionManagerService, SetRangeValuesCommand, SetWorksheetActivateCom
 import type { IScrollToCellCommandParams } from '@univerjs/sheets-ui';
 import { getCoordByCell, getSheetObject, ScrollToCellCommand, SheetSkeletonManagerService } from '@univerjs/sheets-ui';
 import { type IDisposable, Inject, Injector } from '@wendellhu/redi';
+import { deserializeRangeWithSheet } from '@univerjs/engine-formula';
 import { filter, skip, Subject, throttleTime } from 'rxjs';
 
 import type { ISheetFindReplaceHighlightShapeProps } from '../views/shapes/find-replace-highlight.shape';
@@ -163,7 +164,7 @@ export class SheetFindModel extends FindModel {
             case FindScope.SUBUNIT:
                 this.findInActiveWorksheet(query);
                 break;
-            case FindScope.SELECTION:
+            case FindScope.RANGE:
             default:
                 this.findInDedicatedRange(query);
         }
@@ -300,10 +301,57 @@ export class SheetFindModel extends FindModel {
      * @param _query the query object
      * @returns the query complete event
      */
-    findInDedicatedRange(_query: IFindQuery): IFindComplete {
-        return {
-            results: [],
+    findInDedicatedRange(query: IFindQuery): IFindComplete {
+        const noResult = { results: [] };
+        const { dedicatedRange } = query;
+        if (!dedicatedRange) {
+            return noResult;
+        }
+
+        const unitRange = deserializeRangeWithSheet(dedicatedRange);
+        const { sheetName, unitId, range } = unitRange;
+        if (unitId !== this._workbook.getUnitId()) {
+            return noResult;
+        }
+
+        let complete: IFindComplete;
+        let firstSearch = true;
+
+        const assignResult = (result: IFindComplete) => {
+            if (firstSearch) {
+                complete = result;
+                firstSearch = false;
+            } else {
+                this._matchesUpdate$.next(this._matches);
+            }
         };
+
+        const findInRange = (): IFindComplete => {
+            const worksheet = this._workbook.getSheetBySheetName(sheetName);
+            if (!worksheet) {
+                this._matches = [];
+                this._matchesCount = 0;
+                this._matchesPosition = 0;
+
+                assignResult(noResult);
+                return noResult;
+            }
+
+            const lastMatch = this.currentMatch;
+            const newComplete = this._findInRange(worksheet, query, range, unitId);
+
+            this._matches = newComplete.results;
+            this._matchesCount = newComplete.results.length;
+            this._matchesPosition = this._tryRestoreLastMatchesPosition(lastMatch, this._matches);
+
+            assignResult(newComplete);
+            this._updateFindHighlight();
+            return newComplete;
+        };
+
+        findInRange();
+
+        return complete!;
     }
 
     private _findInRange(worksheet: Worksheet, query: IFindQuery, range: IRange, unitId: string): IFindComplete<ISheetCellMatch> {
@@ -668,7 +716,7 @@ export class SheetFindModel extends FindModel {
         return [match, this._matches.findIndex((m) => m === match)];
     }
 
-    async replace(): Promise<boolean> {
+    async replace(replaceString: string): Promise<boolean> {
         if (this._matchesCount === 0 || !this.currentMatch || !this._query || !this.currentMatch.replaceable) {
             return false;
         }
@@ -680,12 +728,12 @@ export class SheetFindModel extends FindModel {
             targetWorksheet,
             this._query.findBy === FindBy.FORMULA,
             this._query.findString,
-            this._query.replaceString!,
+            replaceString,
             this._query.caseSensitive ? 'g' : 'ig'
         );
 
         // for single cell replace we just use SetRangeValuesCommand directly for simplicity
-        return this._commandService.executeCommand(SetRangeValuesCommand.id, {
+        const params: ISetRangeValuesCommandParams = {
             unitId: this.currentMatch.unitId,
             subUnitId: range.subUnitId,
             value: {
@@ -693,13 +741,15 @@ export class SheetFindModel extends FindModel {
                     [range.range.startColumn]: newContent,
                 },
             } as IObjectMatrixPrimitiveType<ICellData>,
-        } as ISetRangeValuesCommandParams);
+        };
+
+        return this._commandService.executeCommand(SetRangeValuesCommand.id, params);
     }
 
-    async replaceAll(): Promise<IReplaceAllResult> {
+    async replaceAll(replaceString: string): Promise<IReplaceAllResult> {
         const unitId = this._workbook.getUnitId();
 
-        const { findString, replaceString, caseSensitive, findBy } = this._query!;
+        const { findString, caseSensitive, findBy } = this._query!;
         const shouldReplaceFormula = findBy === FindBy.FORMULA;
         const replaceFlag = caseSensitive ? 'g' : 'ig';
 
@@ -740,9 +790,11 @@ export class SheetFindModel extends FindModel {
     ): Nullable<ICellData> {
         const range = match.range.range;
         const { startRow, startColumn } = range;
-        const currentContent = worksheet.getCellRaw(startRow, startColumn)!; // TODO: should not get it again, just hook to match item
 
-        // replace formular
+        const currentContent = worksheet.getCellRaw(startRow, startColumn)!;
+        // TODO: should not get it again, just hook to match item
+
+        // replace formula
         if (match.isFormula) {
             if (!shouldReplaceFormula) {
                 return null;
@@ -761,7 +813,7 @@ export class SheetFindModel extends FindModel {
             return newContent;
         }
 
-        // replace plain text
+        // replace plain text string
         const newContent = currentContent.v!.toString().replace(new RegExp(findString, replaceFlag), replaceString!);
         return { v: newContent };
     }
@@ -852,32 +904,38 @@ function hitCell(worksheet: Worksheet, row: number, col: number, query: IFindQue
     const rawData = worksheet.getCellRaw(row, col);
     VALUE_PASSING_OBJECT.rawData = rawData;
 
-    // search formula
+    // deal with formula first
     const hasFormula = !!rawData?.f;
-    if (findBy === FindBy.FORMULA && hasFormula && rawData.f!.toLowerCase().indexOf(query.findString) > -1) {
-        VALUE_PASSING_OBJECT.hit = true;
-        VALUE_PASSING_OBJECT.replaceable = true;
+    if (hasFormula) {
         VALUE_PASSING_OBJECT.isFormula = true;
+
+        if (findBy === FindBy.FORMULA && rawData.f!.toLowerCase().indexOf(query.findString) > -1) {
+            VALUE_PASSING_OBJECT.hit = true;
+            VALUE_PASSING_OBJECT.replaceable = true;
+        } else if (matchCellData(cellData, query)) {
+            VALUE_PASSING_OBJECT.hit = true;
+            VALUE_PASSING_OBJECT.replaceable = false;
+        } else {
+            VALUE_PASSING_OBJECT.hit = false;
+            VALUE_PASSING_OBJECT.replaceable = false;
+        }
+
         return VALUE_PASSING_OBJECT;
     }
 
     // if the cell does not match, we should not check the raw data
+    VALUE_PASSING_OBJECT.isFormula = false;
     if (!matchCellData(cellData, query)) {
         VALUE_PASSING_OBJECT.hit = false;
-        return VALUE_PASSING_OBJECT;
-    }
-
-    if (!rawData) {
+        VALUE_PASSING_OBJECT.replaceable = false;
+    } else if (!rawData) {
         VALUE_PASSING_OBJECT.hit = true;
         VALUE_PASSING_OBJECT.replaceable = false;
-        VALUE_PASSING_OBJECT.isFormula = false;
-        return VALUE_PASSING_OBJECT;
+    } else {
+        VALUE_PASSING_OBJECT.hit = true;
+        VALUE_PASSING_OBJECT.replaceable = true;
     }
 
-    VALUE_PASSING_OBJECT.hit = true;
-    // TODO@wzhudev: we may need to comply with data validation here
-    VALUE_PASSING_OBJECT.replaceable = findBy !== FindBy.FORMULA && !hasFormula; // it is replaceable only it is not calculated
-    VALUE_PASSING_OBJECT.isFormula = hasFormula;
     return VALUE_PASSING_OBJECT;
 }
 
