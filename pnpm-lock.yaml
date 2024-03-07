@@ -10,19 +10,7 @@ importers:
     devDependencies:
       '@antfu/eslint-config':
         specifier: ^2.6.4
-<<<<<<< HEAD
-<<<<<<< HEAD
         version: 2.6.4(@vue/compiler-sfc@3.4.21)(eslint-plugin-format@0.1.0)(eslint-plugin-react-hooks@4.6.0)(eslint-plugin-react-refresh@0.4.5)(eslint-plugin-react@7.33.2)(eslint@8.57.0)(typescript@5.3.3)
-=======
-<<<<<<< HEAD
-        version: 2.6.4(@vue/compiler-sfc@3.4.19)(eslint-plugin-format@0.1.0)(eslint-plugin-react-hooks@4.6.0)(eslint-plugin-react-refresh@0.4.5)(eslint-plugin-react@7.33.2)(eslint@8.57.0)(typescript@5.3.3)
-=======
-        version: 2.6.4(@vue/compiler-sfc@3.4.15)(eslint-plugin-format@0.1.0)(eslint-plugin-react-hooks@4.6.0)(eslint-plugin-react-refresh@0.4.5)(eslint-plugin-react@7.33.2)(eslint@8.56.0)(typescript@5.3.3)
->>>>>>> 7e3c5a4ce (feat(cf): add package config)
->>>>>>> 494030bf7 (feat(cf): add package config)
-=======
-        version: 2.6.4(@vue/compiler-sfc@3.4.15)(eslint-plugin-format@0.1.0)(eslint-plugin-react-hooks@4.6.0)(eslint-plugin-react-refresh@0.4.5)(eslint-plugin-react@7.33.2)(eslint@8.57.0)(typescript@5.3.3)
->>>>>>> 44acb57f1 (fix(cf): support batch creation and deletion formulas are supported)
       '@commitlint/cli':
         specifier: ^19.0.3
         version: 19.0.3(@types/node@20.11.24)(typescript@5.3.3)
@@ -778,6 +766,12 @@ importers:
 
   packages/sheets-conditional-format:
     dependencies:
+      '@types/lodash.get':
+        specifier: ^4.4.9
+        version: 4.4.9
+      '@types/lodash.set':
+        specifier: ^4.3.9
+        version: 4.3.9
       '@types/react-grid-layout':
         specifier: ^1.3.5
         version: 1.3.5
@@ -817,6 +811,12 @@ importers:
       dayjs:
         specifier: ^1.11.10
         version: 1.11.10
+      lodash.get:
+        specifier: ^4.4.2
+        version: 4.4.2
+      lodash.set:
+        specifier: ^4.3.2
+        version: 4.3.2
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -1326,55 +1326,9 @@ importers:
       vitest:
         specifier: ^1.3.1
         version: 1.3.1(@types/node@20.11.24)(less@4.2.0)
-<<<<<<< HEAD
-<<<<<<< HEAD
       vue:
         specifier: ^3.4.21
         version: 3.4.21(typescript@5.3.3)
-=======
-=======
-        version: 1.3.1(@types/node@20.11.19)(less@4.2.0)
-<<<<<<< HEAD
-=======
-        specifier: ^1.2.1
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        version: 1.2.1(@types/node@20.11.16)(less@4.2.0)
-=======
-        version: 1.2.1(@types/node@20.11.7)(happy-dom@13.3.1)(less@4.2.0)
->>>>>>> 1070651f5 (fix(dev): fix dev config)
-<<<<<<< HEAD
->>>>>>> 89540337d (fix(dev): fix dev config)
-<<<<<<< HEAD
->>>>>>> 816d01ba3 (fix(dev): fix dev config)
-<<<<<<< HEAD
->>>>>>> bb699e835 (fix(dev): fix dev config)
-=======
-=======
-=======
-=======
-        version: 1.2.1(@types/node@20.11.7)(happy-dom@13.2.1)(less@4.2.0)
->>>>>>> 5d49a0768 (chore(cf): format code)
->>>>>>> 38115db70 (chore(cf): format code)
-<<<<<<< HEAD
->>>>>>> 9af864941 (chore(cf): format code)
-<<<<<<< HEAD
->>>>>>> 1d774e4f7 (chore(cf): format code)
-=======
-=======
-=======
-        version: 1.2.1(@types/node@20.11.16)(happy-dom@13.2.1)(less@4.2.0)
->>>>>>> 4dca3c6ae (feat(cf): conditional format support ref range)
->>>>>>> 6b3ff90d8 (feat(cf): conditional format support ref range)
-<<<<<<< HEAD
->>>>>>> ff83f954d (feat(cf): conditional format support ref range)
-=======
-=======
->>>>>>> 7e3c5a4ce (feat(cf): add package config)
->>>>>>> 494030bf7 (feat(cf): add package config)
-=======
->>>>>>> 44acb57f1 (fix(cf): support batch creation and deletion formulas are supported)
 
   packages/uniscript:
     dependencies:
@@ -1438,19 +1392,7 @@ packages:
       '@jridgewell/gen-mapping': 0.3.3
       '@jridgewell/trace-mapping': 0.3.20
 
-<<<<<<< HEAD
-<<<<<<< HEAD
   /@antfu/eslint-config@2.6.4(@vue/compiler-sfc@3.4.21)(eslint-plugin-format@0.1.0)(eslint-plugin-react-hooks@4.6.0)(eslint-plugin-react-refresh@0.4.5)(eslint-plugin-react@7.33.2)(eslint@8.57.0)(typescript@5.3.3):
-=======
-<<<<<<< HEAD
-  /@antfu/eslint-config@2.6.4(@vue/compiler-sfc@3.4.19)(eslint-plugin-format@0.1.0)(eslint-plugin-react-hooks@4.6.0)(eslint-plugin-react-refresh@0.4.5)(eslint-plugin-react@7.33.2)(eslint@8.57.0)(typescript@5.3.3):
-=======
-  /@antfu/eslint-config@2.6.4(@vue/compiler-sfc@3.4.15)(eslint-plugin-format@0.1.0)(eslint-plugin-react-hooks@4.6.0)(eslint-plugin-react-refresh@0.4.5)(eslint-plugin-react@7.33.2)(eslint@8.56.0)(typescript@5.3.3):
->>>>>>> 7e3c5a4ce (feat(cf): add package config)
->>>>>>> 494030bf7 (feat(cf): add package config)
-=======
-  /@antfu/eslint-config@2.6.4(@vue/compiler-sfc@3.4.15)(eslint-plugin-format@0.1.0)(eslint-plugin-react-hooks@4.6.0)(eslint-plugin-react-refresh@0.4.5)(eslint-plugin-react@7.33.2)(eslint@8.57.0)(typescript@5.3.3):
->>>>>>> 44acb57f1 (fix(cf): support batch creation and deletion formulas are supported)
     resolution: {integrity: sha512-dMD/QC5KWS1OltdpKLhfZM7W7y7zils85opk8d4lyNr7yn0OFjZs7eMYtcC6DrrN2kQ1JrFvBM7uB0QdWn5PUQ==}
     hasBin: true
     peerDependencies:
@@ -1508,43 +1450,7 @@ packages:
       eslint-plugin-vitest: 0.3.21(@typescript-eslint/eslint-plugin@6.20.0)(eslint@8.57.0)(typescript@5.3.3)
       eslint-plugin-vue: 9.21.1(eslint@8.57.0)
       eslint-plugin-yml: 1.12.2(eslint@8.57.0)
-<<<<<<< HEAD
-<<<<<<< HEAD
       eslint-processor-vue-blocks: 0.1.1(@vue/compiler-sfc@3.4.21)(eslint@8.57.0)
-=======
-      eslint-processor-vue-blocks: 0.1.1(@vue/compiler-sfc@3.4.19)(eslint@8.57.0)
-=======
-      '@stylistic/eslint-plugin': 1.5.4(eslint@8.56.0)(typescript@5.3.3)
-      '@typescript-eslint/eslint-plugin': 6.20.0(@typescript-eslint/parser@6.20.0)(eslint@8.56.0)(typescript@5.3.3)
-      '@typescript-eslint/parser': 6.20.0(eslint@8.56.0)(typescript@5.3.3)
-      eslint: 8.56.0
-      eslint-config-flat-gitignore: 0.1.2
-      eslint-merge-processors: 0.1.0(eslint@8.56.0)
-      eslint-plugin-antfu: 2.1.2(eslint@8.56.0)
-      eslint-plugin-eslint-comments: 3.2.0(eslint@8.56.0)
-      eslint-plugin-format: 0.1.0(eslint@8.56.0)
-      eslint-plugin-i: 2.29.1(@typescript-eslint/parser@6.20.0)(eslint@8.56.0)
-      eslint-plugin-jsdoc: 48.0.4(eslint@8.56.0)
-      eslint-plugin-jsonc: 2.13.0(eslint@8.56.0)
-      eslint-plugin-markdown: 3.0.1(eslint@8.56.0)
-      eslint-plugin-n: 16.6.2(eslint@8.56.0)
-      eslint-plugin-no-only-tests: 3.1.0
-      eslint-plugin-perfectionist: 2.5.0(eslint@8.56.0)(typescript@5.3.3)(vue-eslint-parser@9.4.2)
-      eslint-plugin-react: 7.33.2(eslint@8.56.0)
-      eslint-plugin-react-hooks: 4.6.0(eslint@8.56.0)
-      eslint-plugin-react-refresh: 0.4.5(eslint@8.56.0)
-      eslint-plugin-toml: 0.9.2(eslint@8.56.0)
-      eslint-plugin-unicorn: 50.0.1(eslint@8.56.0)
-      eslint-plugin-unused-imports: 3.0.0(@typescript-eslint/eslint-plugin@6.20.0)(eslint@8.56.0)
-      eslint-plugin-vitest: 0.3.21(@typescript-eslint/eslint-plugin@6.20.0)(eslint@8.56.0)(typescript@5.3.3)
-      eslint-plugin-vue: 9.21.1(eslint@8.56.0)
-      eslint-plugin-yml: 1.12.2(eslint@8.56.0)
-      eslint-processor-vue-blocks: 0.1.1(@vue/compiler-sfc@3.4.15)(eslint@8.56.0)
->>>>>>> 7e3c5a4ce (feat(cf): add package config)
->>>>>>> 494030bf7 (feat(cf): add package config)
-=======
-      eslint-processor-vue-blocks: 0.1.1(@vue/compiler-sfc@3.4.15)(eslint@8.57.0)
->>>>>>> 44acb57f1 (fix(cf): support batch creation and deletion formulas are supported)
       globals: 13.24.0
       jsonc-eslint-parser: 2.4.0
       local-pkg: 0.5.0
@@ -2912,6 +2818,7 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       regenerator-runtime: 0.14.0
+    dev: false
 
   /@babel/runtime@7.23.9:
     resolution: {integrity: sha512-0CX6F+BI2s9dkUqr08KFrAIZgNFj75rdBU/DjCyYLIaV/quFjkk6T+EJ2LkZHyZTbEV4L5p97mNkUsHl2wLFAw==}
@@ -4189,6 +4096,7 @@ packages:
     dependencies:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       '@types/mdx': 2.0.11
 <<<<<<< HEAD
       '@types/react': 18.2.64
@@ -4210,6 +4118,10 @@ packages:
       '@types/react': 18.2.61
 >>>>>>> 44acb57f1 (fix(cf): support batch creation and deletion formulas are supported)
 >>>>>>> 41db36db3 (fix(cf): support batch creation and deletion formulas are supported)
+=======
+      '@types/mdx': 2.0.10
+      '@types/react': 18.2.63
+>>>>>>> 78c8b3767 (feat(cf): support icon set panel)
       react: 18.2.0
     dev: false
 
@@ -4478,6 +4390,7 @@ packages:
       react: 18.2.0
     dev: false
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
   /@radix-ui/react-slot@1.0.2(@types/react@18.2.64)(react@18.2.0):
@@ -4760,6 +4673,9 @@ packages:
   /@radix-ui/react-slot@1.0.2(@types/react@18.2.61)(react@18.2.0):
 >>>>>>> 44acb57f1 (fix(cf): support batch creation and deletion formulas are supported)
 >>>>>>> 41db36db3 (fix(cf): support batch creation and deletion formulas are supported)
+=======
+  /@radix-ui/react-slot@1.0.2(@types/react@18.2.63)(react@18.2.0):
+>>>>>>> 78c8b3767 (feat(cf): support icon set panel)
     resolution: {integrity: sha512-YeTpuq4deV+6DusvVUW4ivBgnkHwECUu0BiN43L5UCDFgdhsRUWAghhTF5MbvNTPzmiFOx90asDSUjWuCNapwg==}
     peerDependencies:
       '@types/react': '*'
@@ -4782,13 +4698,8 @@ packages:
     dependencies:
       '@babel/runtime': 7.23.9
       '@ctrl/tinycolor': 3.6.1
-<<<<<<< HEAD
-      classnames: 2.5.1
-      rc-util: 5.39.0(react-dom@18.2.0)(react@18.2.0)
-=======
       classnames: 2.3.2
-      rc-util: 5.38.2(react-dom@18.2.0)(react@18.2.0)
->>>>>>> 494030bf7 (feat(cf): add package config)
+      rc-util: 5.39.0(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -4809,6 +4720,7 @@ packages:
     dependencies:
       '@babel/runtime': 7.23.9
 <<<<<<< HEAD
+<<<<<<< HEAD
       classnames: 2.5.1
 <<<<<<< HEAD
       rc-util: 5.39.1(react-dom@18.2.0)(react@18.2.0)
@@ -4819,6 +4731,10 @@ packages:
       rc-util: 5.38.2(react-dom@18.2.0)(react@18.2.0)
 >>>>>>> 494030bf7 (feat(cf): add package config)
 >>>>>>> 36779fdf7 (feat(cf): add package config)
+=======
+      classnames: 2.3.2
+      rc-util: 5.39.0(react-dom@18.2.0)(react@18.2.0)
+>>>>>>> 78c8b3767 (feat(cf): support icon set panel)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -5059,6 +4975,7 @@ packages:
     resolution: {integrity: sha512-oDktwaXuDUV+laLg6BB4mEXdncAHyHeePO9eE0t0lqxU50qkqxQ1OJqafyM1Cbrt/8SNVFlvd+XYKaZCLPyW5w==}
     dependencies:
 <<<<<<< HEAD
+<<<<<<< HEAD
       '@babel/core': 7.23.9
 <<<<<<< HEAD
       '@mdx-js/react': 3.0.1(@types/react@18.2.64)(react@18.2.0)
@@ -5072,6 +4989,11 @@ packages:
       '@storybook/blocks': 8.0.0-rc.1(@types/react@18.2.61)(react-dom@18.2.0)(react@18.2.0)
 >>>>>>> 44acb57f1 (fix(cf): support batch creation and deletion formulas are supported)
 >>>>>>> 41db36db3 (fix(cf): support batch creation and deletion formulas are supported)
+=======
+      '@babel/core': 7.23.5
+      '@mdx-js/react': 3.0.1(@types/react@18.2.63)(react@18.2.0)
+      '@storybook/blocks': 8.0.0-rc.1(@types/react@18.2.63)(react-dom@18.2.0)(react@18.2.0)
+>>>>>>> 78c8b3767 (feat(cf): support icon set panel)
       '@storybook/client-logger': 8.0.0-rc.1
       '@storybook/components': 8.0.0-rc.1(@types/react@18.2.64)(react-dom@18.2.0)(react@18.2.0)
       '@storybook/csf-plugin': 8.0.0-rc.1
@@ -5639,9 +5561,9 @@ packages:
     resolution: {integrity: sha512-4Z0wTok3IEtMxzhM+29TajUjTk3Y4UFNDgotgsJ4He7nJ6HUu73zea9HxI238MDM9zd92KZ17FLNIvyhUWpDUg==}
     dependencies:
       '@babel/generator': 7.23.6
-      '@babel/parser': 7.23.9
-      '@babel/traverse': 7.23.9
-      '@babel/types': 7.23.9
+      '@babel/parser': 7.24.0
+      '@babel/traverse': 7.24.0
+      '@babel/types': 7.24.0
       '@storybook/csf': 0.1.2
       '@storybook/types': 8.0.0-rc.3
       fs-extra: 11.2.0
@@ -5723,6 +5645,7 @@ packages:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   /@storybook/node-logger@8.0.0-rc.3:
     resolution: {integrity: sha512-8VkQSMdU9/NwqQWRibG6hlI/MIq3qJ+qMx4TekTHvPXjJbbW+tRvGsFbyqQSFonZmg25XgUIp2wLc46CS/CEvw==}
 =======
@@ -5732,13 +5655,12 @@ packages:
   /@storybook/node-logger@8.0.0-rc.2:
     resolution: {integrity: sha512-jL2bF9BkD9kNELlt5zW1fTB6OI3Ue47ob8j6AtgeB32FW1idheycRzzGCNgZTVBhcKsdSIIg5D49cTadpjJHbQ==}
 >>>>>>> 36779fdf7 (feat(cf): add package config)
+=======
+  /@storybook/node-logger@8.0.0-rc.3:
+    resolution: {integrity: sha512-8VkQSMdU9/NwqQWRibG6hlI/MIq3qJ+qMx4TekTHvPXjJbbW+tRvGsFbyqQSFonZmg25XgUIp2wLc46CS/CEvw==}
+>>>>>>> 78c8b3767 (feat(cf): support icon set panel)
     dev: false
 
-=======
-<<<<<<< HEAD
->>>>>>> 494030bf7 (feat(cf): add package config)
-=======
->>>>>>> 44acb57f1 (fix(cf): support batch creation and deletion formulas are supported)
   /@storybook/preset-react-webpack@8.0.0-rc.1(@swc/core@1.4.2)(esbuild@0.18.20)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3):
     resolution: {integrity: sha512-LbxngVsSAAKjMd4AtYROiLyaJ8tk22EuOIEPQ5r+dpcv92nTWLc7NHe83LrWAvxKizb0G1+T5QLLK7ZOjSKvKA==}
     engines: {node: '>=18.0.0'}
@@ -5952,6 +5874,7 @@ packages:
       file-system-cache: 2.3.0
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   /@storybook/types@8.0.0-rc.3:
     resolution: {integrity: sha512-rV6Vj84WcD+Xea9c0LdVTAzRvDWHTFIbDiT4R4+yNppy9q5NZGTiWprdGNtOiDVCGsT6kpvafBzKYXPtLiCJ+Q==}
 =======
@@ -5959,19 +5882,17 @@ packages:
   /@storybook/types@8.0.0-rc.2:
     resolution: {integrity: sha512-xzj7l/54hPMLLxT3CyBJhCNSpfPNpyxsStNEb9zTSZXTu4xxRTPy09oJ1psSpJeMcG71bTAo6ElPxMVvBENP4w==}
 >>>>>>> 41db36db3 (fix(cf): support batch creation and deletion formulas are supported)
+=======
+  /@storybook/types@8.0.0-rc.3:
+    resolution: {integrity: sha512-rV6Vj84WcD+Xea9c0LdVTAzRvDWHTFIbDiT4R4+yNppy9q5NZGTiWprdGNtOiDVCGsT6kpvafBzKYXPtLiCJ+Q==}
+>>>>>>> 78c8b3767 (feat(cf): support icon set panel)
     dependencies:
       '@storybook/channels': 8.0.0-rc.3
       '@types/express': 4.17.21
       file-system-cache: 2.3.0
     dev: false
 
-  /@stylistic/eslint-plugin-js@1.6.2(eslint@8.57.0):
-    resolution: {integrity: sha512-ndT6X2KgWGxv8101pdMOxL8pihlYIHcOv3ICd70cgaJ9exwkPn8hJj4YQwslxoAlre1TFHnXd/G1/hYXgDrjIA==}
-=======
-  /@stylistic/eslint-plugin-js@1.5.4(eslint@8.56.0):
-=======
   /@stylistic/eslint-plugin-js@1.5.4(eslint@8.57.0):
->>>>>>> 44acb57f1 (fix(cf): support batch creation and deletion formulas are supported)
     resolution: {integrity: sha512-3ctWb3NvJNV1MsrZN91cYp2EGInLPSoZKphXIbIRx/zjZxKwLDr9z4LMOWtqjq14li/OgqUUcMq5pj8fgbLoTw==}
     engines: {node: ^16.0.0 || >=18.0.0}
     peerDependencies:
@@ -6172,7 +6093,7 @@ packages:
     engines: {node: '>=14'}
     dependencies:
       '@babel/code-frame': 7.23.4
-      '@babel/runtime': 7.23.4
+      '@babel/runtime': 7.23.9
       '@types/aria-query': 5.0.4
       aria-query: 5.1.3
       chalk: 4.1.2
@@ -6189,13 +6110,8 @@ packages:
       react-dom: ^18.0.0
     dependencies:
       '@babel/runtime': 7.23.9
-<<<<<<< HEAD
-      '@testing-library/dom': 9.3.4
-      '@types/react-dom': 18.2.20
-=======
       '@testing-library/dom': 9.3.3
-      '@types/react-dom': 18.2.19
->>>>>>> 494030bf7 (feat(cf): add package config)
+      '@types/react-dom': 18.2.20
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: true
@@ -6360,6 +6276,18 @@ packages:
     resolution: {integrity: sha512-PecSzorDGdabF57OBeQO/xFbAkYWo88g4Xvnsx7LRwqLC17I7OoKtA3bQB9uXkY6UkMWCOsA8HSVpaoitscdXw==}
     dev: true
 
+  /@types/lodash.get@4.4.9:
+    resolution: {integrity: sha512-J5dvW98sxmGnamqf+/aLP87PYXyrha9xIgc2ZlHl6OHMFR2Ejdxep50QfU0abO1+CH6+ugx+8wEUN1toImAinA==}
+    dependencies:
+      '@types/lodash': 4.14.202
+    dev: false
+
+  /@types/lodash.set@4.3.9:
+    resolution: {integrity: sha512-KOxyNkZpbaggVmqbpr82N2tDVTx05/3/j0f50Es1prxrWB0XYf9p3QNxqcbWb7P1Q9wlvsUSlCFnwlPCIJ46PQ==}
+    dependencies:
+      '@types/lodash': 4.14.202
+    dev: false
+
   /@types/lodash@4.14.202:
     resolution: {integrity: sha512-OvlIYQK9tNneDlS0VN54LLd5uiPCBOp7gS5Z0f1mjoJYBrtStzgmJBxONW3U6OZqdtNzZPmn9BS/7WI7BFFcFQ==}
     dev: false
@@ -6433,7 +6361,7 @@ packages:
   /@types/react-grid-layout@1.3.5:
     resolution: {integrity: sha512-WH/po1gcEcoR6y857yAnPGug+ZhkF4PaTUxgAbwfeSH/QOgVSakKHBXoPGad/sEznmkiaK3pqHk+etdWisoeBQ==}
     dependencies:
-      '@types/react': 18.2.57
+      '@types/react': 18.2.63
     dev: false
 
   /@types/react-transition-group@4.4.10:
@@ -6447,23 +6375,15 @@ packages:
     dependencies:
       '@types/prop-types': 15.7.11
       '@types/scheduler': 0.16.8
-<<<<<<< HEAD
-<<<<<<< HEAD
-      csstype: 3.1.3
-    dev: true
-=======
       csstype: 3.1.2
->>>>>>> 494030bf7 (feat(cf): add package config)
+    dev: true
 
   /@types/react@18.2.64:
     resolution: {integrity: sha512-MlmPvHgjj2p3vZaxbQgFUQFvD8QiZwACfGqEdDSWou5yISWxDQ4/74nCAwsUiX7UFLKZz3BbVSPj+YxeoGGCfg==}
     dependencies:
       '@types/prop-types': 15.7.11
       '@types/scheduler': 0.16.8
-      csstype: 3.1.3
-=======
       csstype: 3.1.2
->>>>>>> 44acb57f1 (fix(cf): support batch creation and deletion formulas are supported)
 
   /@types/resolve@1.20.6:
     resolution: {integrity: sha512-A4STmOXPhMUtHH+S6ymgE2GiBSMqf4oTvcQZMcHzokuTLVYzXTB8ttjcgxOVaAp2lGwEdzZ0J+cRbbeevQj1UQ==}
@@ -6787,6 +6707,7 @@ packages:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   /@univerjs/icons@0.1.40(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-XsMlxOmTYAyV3H2RHZTJieLRTkO76/X/QgcjL9n0XrWOuIyCkGAOsyTIMtqOMOvQdd0TwYqX8ZBPwxwNvhLqrw==}
 =======
@@ -6804,10 +6725,13 @@ packages:
 >>>>>>> ff83f954d (feat(cf): conditional format support ref range)
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> 78c8b3767 (feat(cf): support icon set panel)
   /@univerjs/icons-svg@0.1.33:
     resolution: {integrity: sha512-0004a2voyXpXaqBvHQUzt/s1in8JylCs1l5/WwyQiikjopQlo+sEFEzSIuELZCuiv0SiqxBgcqrMumrPLXEIZA==}
     dev: false
 
+<<<<<<< HEAD
 >>>>>>> 6d04d9263 (feat(cf): support pre build icon base64)
   /@univerjs/icons@0.1.30(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-TdI4MuVH6zkbeLXllrkVemilQ+MnTm7PJLwaQQXyuwl+YSuoe4m5S5nc6iE/CXzx7Zp5Nyhv1rsXetpXWcgEpA==}
@@ -6912,6 +6836,8 @@ packages:
 =======
 >>>>>>> 41db36db3 (fix(cf): support batch creation and deletion formulas are supported)
 =======
+=======
+>>>>>>> 78c8b3767 (feat(cf): support icon set panel)
   /@univerjs/icons@0.1.33(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-RCRoDv2W+gjzwDL6KwXc0cmjvHaWQwCvz2W6thxSV6oeNAQco3m3pZMHrW4PMiHtJV/1r3X3cGPvkVJsXvxelw==}
     peerDependencies:
@@ -6922,7 +6848,20 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
+<<<<<<< HEAD
 >>>>>>> d3f0607aa (feat(cf): support pre build icon base64)
+=======
+  /@univerjs/icons@0.1.39(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-LlvMLjF18VM1KKLybMpCEnetnyvQgb5ZvJA0HeWRnTNO8HFXlEpCJmXpAIajNGL+PjtZU4LTj3tMf/2C6prn/w==}
+    peerDependencies:
+      react: '*'
+      react-dom: '*'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+>>>>>>> 78c8b3767 (feat(cf): support icon set panel)
   /@vitejs/plugin-react@4.2.1(vite@5.0.12):
     resolution: {integrity: sha512-oojO9IDc4nCUUi8qIR11KoQm0XFFLIwsRBwHRR4d/88IWghn1y6ckz/bJ8GHDCsYEJee8mDzqtJxh15/cisJNQ==}
     engines: {node: ^14.18.0 || >=16.0.0}
@@ -7086,24 +7025,30 @@ packages:
       '@volar/language-core': 1.11.1
       path-browserify: 1.0.1
 
-<<<<<<< HEAD
-  /@vue/compiler-core@3.4.21:
-    resolution: {integrity: sha512-MjXawxZf2SbZszLPYxaFCjxfibYrzr3eYbKxwpLR9EQN+oaziSu3qKVbwBERj1IFIB8OLUewxB5m/BFzi613og==}
-    dependencies:
-      '@babel/parser': 7.23.9
-      '@vue/shared': 3.4.21
-=======
   /@vue/compiler-core@3.4.15:
     resolution: {integrity: sha512-XcJQVOaxTKCnth1vCxEChteGuwG6wqnUHxAm1DO3gCz0+uXKaJNx8/digSz4dLALCy8n2lKq24jSUs8segoqIw==}
     dependencies:
       '@babel/parser': 7.23.6
       '@vue/shared': 3.4.15
->>>>>>> 494030bf7 (feat(cf): add package config)
       entities: 4.5.0
       estree-walker: 2.0.2
       source-map-js: 1.0.2
 
-<<<<<<< HEAD
+  /@vue/compiler-core@3.4.21:
+    resolution: {integrity: sha512-MjXawxZf2SbZszLPYxaFCjxfibYrzr3eYbKxwpLR9EQN+oaziSu3qKVbwBERj1IFIB8OLUewxB5m/BFzi613og==}
+    dependencies:
+      '@babel/parser': 7.24.0
+      '@vue/shared': 3.4.21
+      entities: 4.5.0
+      estree-walker: 2.0.2
+      source-map-js: 1.0.2
+
+  /@vue/compiler-dom@3.4.15:
+    resolution: {integrity: sha512-wox0aasVV74zoXyblarOM3AZQz/Z+OunYcIHe1OsGclCHt8RsRm04DObjefaI82u6XDzv+qGWZ24tIsRAIi5MQ==}
+    dependencies:
+      '@vue/compiler-core': 3.4.15
+      '@vue/shared': 3.4.15
+
   /@vue/compiler-dom@3.4.21:
     resolution: {integrity: sha512-IZC6FKowtT1sl0CR5DpXSiEB5ayw75oT2bma1BEhV7RRR1+cfwLrxc2Z8Zq/RGFzJ8w5r9QtCOvTjQgdn0IKmA==}
     dependencies:
@@ -7113,46 +7058,21 @@ packages:
   /@vue/compiler-sfc@3.4.21:
     resolution: {integrity: sha512-me7epoTxYlY+2CUM7hy9PCDdpMPfIwrOvAXud2Upk10g4YLv9UBW7kL798TvMeDhPthkZ0CONNrK2GoeI1ODiQ==}
     dependencies:
-      '@babel/parser': 7.23.9
+      '@babel/parser': 7.24.0
       '@vue/compiler-core': 3.4.21
       '@vue/compiler-dom': 3.4.21
       '@vue/compiler-ssr': 3.4.21
       '@vue/shared': 3.4.21
-=======
-  /@vue/compiler-dom@3.4.15:
-    resolution: {integrity: sha512-wox0aasVV74zoXyblarOM3AZQz/Z+OunYcIHe1OsGclCHt8RsRm04DObjefaI82u6XDzv+qGWZ24tIsRAIi5MQ==}
-    dependencies:
-      '@vue/compiler-core': 3.4.15
-      '@vue/shared': 3.4.15
-
-  /@vue/compiler-sfc@3.4.15:
-    resolution: {integrity: sha512-LCn5M6QpkpFsh3GQvs2mJUOAlBQcCco8D60Bcqmf3O3w5a+KWS5GvYbrrJBkgvL1BDnTp+e8q0lXCLgHhKguBA==}
-    dependencies:
-      '@babel/parser': 7.24.0
-      '@vue/compiler-core': 3.4.15
-      '@vue/compiler-dom': 3.4.15
-      '@vue/compiler-ssr': 3.4.15
-      '@vue/shared': 3.4.15
->>>>>>> 494030bf7 (feat(cf): add package config)
       estree-walker: 2.0.2
-      magic-string: 0.30.5
+      magic-string: 0.30.8
       postcss: 8.4.35
       source-map-js: 1.0.2
 
-<<<<<<< HEAD
   /@vue/compiler-ssr@3.4.21:
     resolution: {integrity: sha512-M5+9nI2lPpAsgXOGQobnIueVqc9sisBFexh5yMIMRAPYLa7+5wEJs8iqOZc1WAa9WQbx9GR2twgznU8LTIiZ4Q==}
     dependencies:
       '@vue/compiler-dom': 3.4.21
       '@vue/shared': 3.4.21
-=======
-  /@vue/compiler-ssr@3.4.15:
-    resolution: {integrity: sha512-1jdeQyiGznr8gjFDadVmOJqZiLNSsMa5ZgqavkPZ8O2wjHv0tVuAEsw5hTdUoUW4232vpBbL/wJhzVW/JwY1Uw==}
-    dependencies:
-      '@vue/compiler-dom': 3.4.15
-      '@vue/shared': 3.4.15
-    dev: true
->>>>>>> 494030bf7 (feat(cf): add package config)
 
   /@vue/language-core@1.8.27(typescript@5.3.3):
     resolution: {integrity: sha512-L8Kc27VdQserNaCUNiSFdDl9LWT24ly8Hpwf1ECy3aFb9m6bDhBGQYOujDm21N7EW3moKIOKEanQwe1q5BK+mA==}
@@ -7164,13 +7084,8 @@ packages:
     dependencies:
       '@volar/language-core': 1.11.1
       '@volar/source-map': 1.11.1
-<<<<<<< HEAD
-      '@vue/compiler-dom': 3.4.21
-      '@vue/shared': 3.4.21
-=======
       '@vue/compiler-dom': 3.4.15
       '@vue/shared': 3.4.15
->>>>>>> 494030bf7 (feat(cf): add package config)
       computeds: 0.0.1
       minimatch: 9.0.3
       muggle-string: 0.3.1
@@ -7178,7 +7093,6 @@ packages:
       typescript: 5.3.3
       vue-template-compiler: 2.7.15
 
-<<<<<<< HEAD
   /@vue/reactivity@3.4.21:
     resolution: {integrity: sha512-UhenImdc0L0/4ahGCyEzc/pZNwVgcglGy9HVzJ1Bq2Mm9qXOpP8RyNTjookw/gOCUlXSEtuZ2fUg5nrHcoqJcw==}
     dependencies:
@@ -7206,12 +7120,11 @@ packages:
       '@vue/shared': 3.4.21
       vue: 3.4.21(typescript@5.3.3)
 
-  /@vue/shared@3.4.21:
-    resolution: {integrity: sha512-PuJe7vDIi6VYSinuEbUIQgMIRZGgM8e4R+G+/dQTk0X1NEdvgvvgv7m+rfmDH1gZzyA1OjjoWskvHlfRNfQf3g==}
-=======
   /@vue/shared@3.4.15:
     resolution: {integrity: sha512-KzfPTxVaWfB+eGcGdbSf4CWdaXcGDqckoeXUh7SB3fZdEtzPCK2Vq9B/lRRL3yutax/LWITz+SwvgyOxz5V75g==}
->>>>>>> 494030bf7 (feat(cf): add package config)
+
+  /@vue/shared@3.4.21:
+    resolution: {integrity: sha512-PuJe7vDIi6VYSinuEbUIQgMIRZGgM8e4R+G+/dQTk0X1NEdvgvvgv7m+rfmDH1gZzyA1OjjoWskvHlfRNfQf3g==}
 
   /@webassemblyjs/ast@1.11.6:
     resolution: {integrity: sha512-IN1xI7PwOvLPgjcf180gC1bqn3q/QaOCwYUahIOhbYUu8KA/3tw2RT/T0Gidi1l7Hhj5D/INhJxiICObqpMu4Q==}
@@ -8657,6 +8570,9 @@ packages:
     resolution: {integrity: sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==}
 >>>>>>> 36779fdf7 (feat(cf): add package config)
 
+  /csstype@3.1.3:
+    resolution: {integrity: sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==}
+
   /dargs@8.1.0:
     resolution: {integrity: sha512-wAV9QHOsNbwnWdNW2FYvE1P56wtgSbM+3SZcdGiWQILwVjACCXDCI3Ai8QlCjMDB8YK5zySiXZYBiwGmNY3lnw==}
     engines: {node: '>=12'}
@@ -10070,36 +9986,13 @@ packages:
       - supports-color
     dev: true
 
-<<<<<<< HEAD
-<<<<<<< HEAD
   /eslint-processor-vue-blocks@0.1.1(@vue/compiler-sfc@3.4.21)(eslint@8.57.0):
-=======
-<<<<<<< HEAD
-  /eslint-processor-vue-blocks@0.1.1(@vue/compiler-sfc@3.4.19)(eslint@8.57.0):
-=======
-  /eslint-processor-vue-blocks@0.1.1(@vue/compiler-sfc@3.4.15)(eslint@8.56.0):
->>>>>>> 7e3c5a4ce (feat(cf): add package config)
->>>>>>> 494030bf7 (feat(cf): add package config)
-=======
-  /eslint-processor-vue-blocks@0.1.1(@vue/compiler-sfc@3.4.15)(eslint@8.57.0):
->>>>>>> 44acb57f1 (fix(cf): support batch creation and deletion formulas are supported)
     resolution: {integrity: sha512-9+dU5lU881log570oBwpelaJmOfOzSniben7IWEDRYQPPWwlvaV7NhOtsTuUWDqpYT+dtKKWPsgz4OkOi+aZnA==}
     peerDependencies:
       '@vue/compiler-sfc': ^3.3.0
       eslint: ^8.50.0
     dependencies:
-<<<<<<< HEAD
-<<<<<<< HEAD
       '@vue/compiler-sfc': 3.4.21
-=======
-<<<<<<< HEAD
-      '@vue/compiler-sfc': 3.4.19
->>>>>>> 494030bf7 (feat(cf): add package config)
-      eslint: 8.57.0
-=======
-=======
->>>>>>> 44acb57f1 (fix(cf): support batch creation and deletion formulas are supported)
-      '@vue/compiler-sfc': 3.4.15
       eslint: 8.57.0
     dev: true
 
@@ -12190,6 +12083,10 @@ packages:
     resolution: {integrity: sha512-GK3g5RPZWTRSeLSpgP8Xhra+pnjBC56q9FZYe1d5RN3TJ35dbkGy3YqBSMbyCrlbi+CM9Z3Jk5yTL7RCsqboyQ==}
     dev: true
 
+  /lodash.set@4.3.2:
+    resolution: {integrity: sha512-4hNPN5jlm/N/HLMCO43v8BXKq9Z7QdAGc/VGrRD61w8gN9g/6jF9A4L1pbUgBLCffi0w9VsXfTOij5x8iTyFvg==}
+    dev: false
+
   /lodash.snakecase@4.1.1:
     resolution: {integrity: sha512-QZ1d4xoBHYUeuouhEq3lk3Uq7ldgyFXGBhg04+oRLnIz8o9T65Eh+8YdroUwn846zchkA9yDsDl5CVVaV2nqYw==}
     dev: true
@@ -12303,6 +12200,12 @@ packages:
 
   /magic-string@0.30.5:
     resolution: {integrity: sha512-7xlpfBaQaP/T6Vh8MO/EqXSW5En6INHEvEXQiuff7Gku0PWjU3uf6w/j9o7O+SpB5fOAkrI5HeoNgwjEO0pFsA==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@jridgewell/sourcemap-codec': 1.4.15
+
+  /magic-string@0.30.8:
+    resolution: {integrity: sha512-ISQTe55T2ao7XtlAStud6qwYPZjE4GK1S/BeVPus4jrq6JuOnQ00YKQC581RWhR122W7msZV263KzVeLoqidyQ==}
     engines: {node: '>=12'}
     dependencies:
       '@jridgewell/sourcemap-codec': 1.4.15
@@ -13624,7 +13527,7 @@ packages:
       react: '>=16.9.0'
       react-dom: '>=16.9.0'
     dependencies:
-      '@babel/runtime': 7.23.4
+      '@babel/runtime': 7.23.9
       '@rc-component/portal': 1.1.2(react-dom@18.2.0)(react@18.2.0)
       classnames: 2.3.2
       rc-motion: 2.9.0(react-dom@18.2.0)(react@18.2.0)
@@ -13641,13 +13544,8 @@ packages:
     dependencies:
       '@babel/runtime': 7.23.4
       '@rc-component/trigger': 1.18.3(react-dom@18.2.0)(react@18.2.0)
-<<<<<<< HEAD
-      classnames: 2.5.1
-      rc-util: 5.39.0(react-dom@18.2.0)(react@18.2.0)
-=======
       classnames: 2.3.2
-      rc-util: 5.38.2(react-dom@18.2.0)(react@18.2.0)
->>>>>>> 494030bf7 (feat(cf): add package config)
+      rc-util: 5.39.0(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -13673,15 +13571,9 @@ packages:
       react: '>=16.0.0'
       react-dom: '>=16.0.0'
     dependencies:
-<<<<<<< HEAD
-      '@babel/runtime': 7.23.9
-      classnames: 2.5.1
-      rc-util: 5.39.0(react-dom@18.2.0)(react@18.2.0)
-=======
       '@babel/runtime': 7.23.4
       classnames: 2.3.2
-      rc-util: 5.38.2(react-dom@18.2.0)(react@18.2.0)
->>>>>>> 494030bf7 (feat(cf): add package config)
+      rc-util: 5.39.0(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -13710,6 +13602,7 @@ packages:
     dependencies:
       '@babel/runtime': 7.23.9
 <<<<<<< HEAD
+<<<<<<< HEAD
       classnames: 2.5.1
 <<<<<<< HEAD
       rc-util: 5.39.1(react-dom@18.2.0)(react@18.2.0)
@@ -13720,6 +13613,10 @@ packages:
       rc-util: 5.38.2(react-dom@18.2.0)(react@18.2.0)
 >>>>>>> 494030bf7 (feat(cf): add package config)
 >>>>>>> 36779fdf7 (feat(cf): add package config)
+=======
+      classnames: 2.3.2
+      rc-util: 5.39.0(react-dom@18.2.0)(react@18.2.0)
+>>>>>>> 78c8b3767 (feat(cf): support icon set panel)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -13775,7 +13672,7 @@ packages:
     dependencies:
       '@babel/runtime': 7.23.9
       '@rc-component/trigger': 1.18.3(react-dom@18.2.0)(react@18.2.0)
-      classnames: 2.5.1
+      classnames: 2.3.2
       dayjs: 1.11.10
       rc-overflow: 1.3.2(react-dom@18.2.0)(react@18.2.0)
       rc-resize-observer: 1.4.0(react-dom@18.2.0)(react@18.2.0)
@@ -13792,6 +13689,7 @@ packages:
     dependencies:
       '@babel/runtime': 7.23.9
 <<<<<<< HEAD
+<<<<<<< HEAD
       classnames: 2.5.1
 <<<<<<< HEAD
       rc-util: 5.39.1(react-dom@18.2.0)(react@18.2.0)
@@ -13802,6 +13700,10 @@ packages:
       rc-util: 5.38.2(react-dom@18.2.0)(react@18.2.0)
 >>>>>>> 494030bf7 (feat(cf): add package config)
 >>>>>>> 36779fdf7 (feat(cf): add package config)
+=======
+      classnames: 2.3.2
+      rc-util: 5.39.0(react-dom@18.2.0)(react@18.2.0)
+>>>>>>> 78c8b3767 (feat(cf): support icon set panel)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       resize-observer-polyfill: 1.5.1
@@ -13814,18 +13716,13 @@ packages:
       react: '*'
       react-dom: '*'
     dependencies:
-      '@babel/runtime': 7.23.4
+      '@babel/runtime': 7.23.9
       '@rc-component/trigger': 1.18.3(react-dom@18.2.0)(react@18.2.0)
       classnames: 2.3.2
       rc-motion: 2.9.0(react-dom@18.2.0)(react@18.2.0)
       rc-overflow: 1.3.2(react-dom@18.2.0)(react@18.2.0)
-<<<<<<< HEAD
       rc-util: 5.39.0(react-dom@18.2.0)(react@18.2.0)
-      rc-virtual-list: 3.11.4(react-dom@18.2.0)(react@18.2.0)
-=======
-      rc-util: 5.38.2(react-dom@18.2.0)(react@18.2.0)
       rc-virtual-list: 3.11.3(react-dom@18.2.0)(react@18.2.0)
->>>>>>> 494030bf7 (feat(cf): add package config)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -13856,10 +13753,13 @@ packages:
     dev: false
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   /rc-util@5.39.1(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-OW/ERynNDgNr4y0oiFmtes3rbEamXw7GHGbkbNd9iRr7kgT03T6fT0b9WpJ3mbxKhyOcAHnGcIoh5u/cjrC2OQ==}
 =======
 <<<<<<< HEAD
+=======
+>>>>>>> 78c8b3767 (feat(cf): support icon set panel)
   /rc-util@5.39.0(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-fEVbkOApBUK/lg+NTkfC3fw336EhgRy531ly2QvZj8G+21OjPEzb9TtH/zfKDL2BuQqbGh8J5zXeFyfcELXOlQ==}
 >>>>>>> 36779fdf7 (feat(cf): add package config)
@@ -13873,12 +13773,8 @@ packages:
       react-is: 18.2.0
     dev: false
 
-  /rc-virtual-list@3.11.4(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-NbBi0fvyIu26gP69nQBiWgUMTPX3mr4FcuBQiVqagU0BnuX8WQkiivnMs105JROeuUIFczLrlgUhLQwTWV1XDA==}
-=======
   /rc-virtual-list@3.11.3(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-tu5UtrMk/AXonHwHxUogdXAWynaXsrx1i6dsgg+lOo/KJSF8oBAcprh1z5J3xgnPJD5hXxTL58F8s8onokdt0Q==}
->>>>>>> 494030bf7 (feat(cf): add package config)
     engines: {node: '>=8.x'}
     peerDependencies:
       react: '*'
@@ -14237,7 +14133,7 @@ packages:
   /redux@4.2.1:
     resolution: {integrity: sha512-LAUYz4lc+Do8/g7aeRa8JkyDErK6ekstQaqWQrNRW//MY1TvCEpMtpTWvlQ+FPbWCx+Xixu/6SHt5N0HR+SB4w==}
     dependencies:
-      '@babel/runtime': 7.23.4
+      '@babel/runtime': 7.23.9
     dev: false
 
   /reflect.getprototypeof@1.0.4:
@@ -15331,14 +15227,10 @@ packages:
   /tiny-invariant@1.3.1:
     resolution: {integrity: sha512-AD5ih2NlSssTCwsMznbvwMZpJ1cbhkGd2uueNxzv2jDlEeZdU04JQfRnggJQ8DrcVBGjAsCKwFBbDlVNtEMlzw==}
 
-<<<<<<< HEAD
   /tiny-invariant@1.3.3:
     resolution: {integrity: sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==}
     dev: false
 
-  /tinybench@2.6.0:
-    resolution: {integrity: sha512-N8hW3PG/3aOoZAN5V/NSAEDz0ZixDSSt5b/a05iqtpgfLWMSVuCo7w0k2vVvEjdrIoeGqZzweX2WlyioNIHchA==}
-=======
   /tinybench@2.5.1:
     resolution: {integrity: sha512-65NKvSuAVDP/n4CqH+a9w2kTlLReS9vhsAP06MWx+/89nMinJyB2icyl58RIcqCmIggpojIGeuJGhjU1aGMBSg==}
 
@@ -15346,7 +15238,6 @@ packages:
     resolution: {integrity: sha512-zBTCK0cCgRROxvs9c0CGK838sPkeokNGdQVUUwHAbynHFlmyJYj825f/oRs528HaIJ97lo0pLIlDUzwN+IorWg==}
     engines: {node: '>=14.0.0'}
     dev: true
->>>>>>> 494030bf7 (feat(cf): add package config)
 
   /tinypool@0.8.2:
     resolution: {integrity: sha512-SUszKYe5wgsxnNOVlBYO6IC+8VGWdVGZWAqUxp3UErNBtptZvWbwyUOyzNL59zigz2rCA92QiL3wvG+JDSdJdQ==}
