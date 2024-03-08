@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { LocaleService, ThemeService } from '@univerjs/core';
+import { IContextService, LocaleService, ThemeService } from '@univerjs/core';
 import type { CURSOR_TYPE, IMouseEvent } from '@univerjs/engine-render';
 import {
     DeviceType,
@@ -158,7 +158,6 @@ describe('Test indirect', () => {
     let get: Injector['get'];
 
     let themeService: ThemeService;
-
     let selectionRenderService: SelectionRenderService;
 
     let selectionStartParam: ISelectionWithCoordAndStyle[];
@@ -179,6 +178,7 @@ describe('Test indirect', () => {
         get = testBed.get;
 
         const localeService = get(LocaleService);
+        const contextService = get(IContextService);
 
         themeService = get(ThemeService);
         themeService.setTheme(theme);
@@ -196,7 +196,8 @@ describe('Test indirect', () => {
             config,
             worksheet.getCellMatrix(),
             workbook.getStyles(),
-            localeService
+            localeService,
+            contextService
         );
 
         const scene = new Scene('', new Engine());

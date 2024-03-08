@@ -16,11 +16,10 @@
 
 import type { Nullable, Workbook, Worksheet } from '@univerjs/core';
 import { IUniverInstanceService } from '@univerjs/core';
-import { useObservable } from '@univerjs/ui';
 import { useDependency } from '@wendellhu/redi/react-bindings';
 import { of } from 'rxjs';
 
-// TODO@wzhudev: this can be moved to the @univerjs/ui package.
+import { useObservable } from '../../components/hooks/observable';
 
 /**
  * A react hooks to get the active workbook.

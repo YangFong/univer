@@ -326,7 +326,6 @@ export class ObjectMatrix<T> {
         return this;
     }
 
-
     swapRow(src: number, target: number): void {
         const srcRow = this._matrix[src];
         const targetRow = this._matrix[target];
