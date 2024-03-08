@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { Plugin, PluginType } from '@univerjs/core';
+import { LocaleService, Plugin, PluginType } from '@univerjs/core';
 import type { Dependency } from '@wendellhu/redi';
 import { Inject, Injector } from '@wendellhu/redi';
 
+import { zhCN } from './locale';
 import { SheetsFilterRenderController } from './controllers/sheets-filter-render.controller';
 import { SheetsFilterUIController } from './controllers/sheets-filter-ui.controller';
 
@@ -28,9 +29,14 @@ export class UniverSheetsFilterUIPlugin extends Plugin {
 
     constructor(
         _config: unknown,
-        @Inject(Injector) protected readonly _injector: Injector
+        @Inject(Injector) protected readonly _injector: Injector,
+        @Inject(LocaleService) private readonly _localeService: LocaleService
     ) {
         super(NAME);
+
+        this._localeService.load({
+            zhCN,
+        });
     }
 
     override onStarting(injector: Injector): void {

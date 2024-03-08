@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import { type IShortcutItem, KeyCode, MetaKeys } from '@univerjs/ui';
-import { whenSheetEditorFocused } from '@univerjs/sheets-ui';
-import { SmartToggleFilterCommand } from '../commands/commands';
-
-export const SmartToggleFilterShortcut: IShortcutItem = {
-    id: SmartToggleFilterCommand.id,
-    binding: KeyCode.L | MetaKeys.CTRL_COMMAND | MetaKeys.SHIFT,
-    description: 'filter.shortcut.smart-toggle-filter',
-    preconditions: whenSheetEditorFocused,
-    group: '4_sheet-edit',
+export default {
+    filter: {
+        toolbar: {
+            'smart-toggle-filter-tooltip': 'Toggle Filter',
+            'clear-filter-conditions': 'Clear Filter Conditions',
+            're-calc-filter-conditions': 'Re-calc Filter Conditions',
+        },
+        shortcut: {
+            'smart-toggle-filter': 'Toggle Filter',
+        },
+    },
 };

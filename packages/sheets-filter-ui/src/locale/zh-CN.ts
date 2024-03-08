@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-import { type IShortcutItem, KeyCode, MetaKeys } from '@univerjs/ui';
-import { whenSheetEditorFocused } from '@univerjs/sheets-ui';
-import { SmartToggleFilterCommand } from '../commands/commands';
+import type enUS from './en-US';
 
-export const SmartToggleFilterShortcut: IShortcutItem = {
-    id: SmartToggleFilterCommand.id,
-    binding: KeyCode.L | MetaKeys.CTRL_COMMAND | MetaKeys.SHIFT,
-    description: 'filter.shortcut.smart-toggle-filter',
-    preconditions: whenSheetEditorFocused,
-    group: '4_sheet-edit',
+const zLocale: typeof enUS = {
+    filter: {
+        toolbar: {
+            'smart-toggle-filter-tooltip': '切换筛选',
+            'clear-filter-conditions': '清除筛选条件',
+            're-calc-filter-conditions': '重新计算',
+        },
+        shortcut: {
+            'smart-toggle-filter': '切换筛选',
+        },
+    },
 };
+
+export default zLocale;

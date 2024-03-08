@@ -30,7 +30,10 @@ export class SheetsFilterService extends Disposable {
     private readonly _filterModels = new Map<string, Map<string, FilterModel>>();
 
     private readonly _activeFilterModel$ = new BehaviorSubject<Nullable<FilterModel>>(null);
+    /** The current Workbook's active Worksheet's filter model (if there is one). An observable value. */
     readonly activeFilterModel$ = this._activeFilterModel$.asObservable();
+    /** The current Workbook's active Worksheet's filter model (if there is one). */
+    get activeFilterModel(): Nullable<FilterModel> { return this._activeFilterModel$.getValue(); }
 
     constructor(
         @IUniverInstanceService private readonly _univerInstanceService: IUniverInstanceService,
@@ -39,6 +42,7 @@ export class SheetsFilterService extends Disposable {
         super();
 
         this._initModel();
+        this._initActiveFilterModel();
     }
 
     /**
@@ -80,6 +84,10 @@ export class SheetsFilterService extends Disposable {
         }
 
         return false;
+    }
+
+    private _initActiveFilterModel() {
+        // Subscribe to the active
     }
 
     private _initModel() {
