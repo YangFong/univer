@@ -24,7 +24,7 @@ import type { IKeyValue } from '../../shared/types';
 import { IContextService } from '../context/context.service';
 import { ILogService } from '../log/log.service';
 
-export const enum CommandType {
+export enum CommandType {
     /** Command could generate some operations or mutations. */
     COMMAND = 0,
     /** An operation that do not require conflict resolve.  */

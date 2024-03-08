@@ -15,29 +15,39 @@
  */
 
 import type { IRange } from '@univerjs/core';
-import { Disposable, IUniverInstanceService, LifecycleStages, OnLifecycle, ThemeService } from '@univerjs/core';
+import { CommandType, Disposable, ICommandService, IUniverInstanceService, LifecycleStages, OnLifecycle, ThemeService } from '@univerjs/core';
 import { ISelectionRenderService, SelectionShape, SheetSkeletonManagerService } from '@univerjs/sheets-ui';
+import type { IDisposable } from '@wendellhu/redi';
 import { Inject } from '@wendellhu/redi';
-import { SheetFilterService } from '@univerjs/sheets-filter';
+import { ReCalcSheetsFilterMutation, RemoveSheetsFilterMutation, SetSheetsFilterConditionMutation, SetSheetsFilterRangeMutation, SheetsFilterService } from '@univerjs/sheets-filter';
 import type { SpreadsheetSkeleton } from '@univerjs/engine-render';
 import { IRenderManagerService } from '@univerjs/engine-render';
-import type { ISelectionStyle } from '@univerjs/sheets';
+import type { ISelectionStyle, ISheetCommandSharedParams } from '@univerjs/sheets';
+import { filter, map, Observable, of, startWith, switchMap } from 'rxjs';
 
 const DEFAULT_Z_INDEX = 1000;
+
+const FILTER_MUTATIONS = new Set([
+    SetSheetsFilterRangeMutation.id,
+    SetSheetsFilterConditionMutation.id,
+    RemoveSheetsFilterMutation.id,
+    ReCalcSheetsFilterMutation.id,
+]);
 
 /**
  * This controller is for rendering **Filter**-related elements on the canvas, including:
  * - the filter range
  * - the open filter config panel button
  */
-@OnLifecycle(LifecycleStages.Rendered, SheetFilterRenderController)
-export class SheetFilterRenderController extends Disposable {
+@OnLifecycle(LifecycleStages.Rendered, SheetsFilterRenderController)
+export class SheetsFilterRenderController extends Disposable {
     private _filterRangeShape: SelectionShape | null = null;
 
     constructor(
         @Inject(SheetSkeletonManagerService) private readonly _sheetSkeletonManagerService: SheetSkeletonManagerService,
-        @Inject(SheetFilterService) private readonly _sheetFilterService: SheetFilterService,
+        @Inject(SheetsFilterService) private readonly _sheetsFilterService: SheetsFilterService,
         @Inject(ThemeService) private readonly _themeService: ThemeService,
+        @ICommandService private readonly _commandService: ICommandService,
         @IUniverInstanceService private readonly _univerInstanceService: IUniverInstanceService,
         @IRenderManagerService private readonly _renderManagerService: IRenderManagerService,
         @ISelectionRenderService private readonly _selectionRenderService: ISelectionRenderService
@@ -48,30 +58,49 @@ export class SheetFilterRenderController extends Disposable {
         this._initRenderer();
     }
 
-    // TODO@wzhudev: render sheet filter range on the canvas
-    // TODO@wzhudev: the next target is to render a filter range on the canvas
     private _initRenderer(): void {
-        this._sheetSkeletonManagerService.currentSkeleton$.subscribe((skeletonParams) => {
-            this._disposeRendering();
+        this._sheetSkeletonManagerService.currentSkeleton$
+            .pipe(
+                switchMap((skeletonParams) => {
+                    if (!skeletonParams) {
+                        return of(null);
+                    }
 
-            if (!skeletonParams) {
-                return;
-            }
+                    const { unitId } = skeletonParams;
+                    const workbook = this._univerInstanceService.getUniverSheetInstance(unitId);
+                    if (!workbook) {
+                        return of(null);
+                    }
 
-            const { unitId } = skeletonParams;
-            const workbook = this._univerInstanceService.getUniverSheetInstance(unitId);
-            const activeSheet = workbook?.getActiveSheet();
-            if (!activeSheet) {
-                return;
-            }
+                    const activeSheet = workbook.getActiveSheet();
+                    const getParams = () => ({
+                        unitId,
+                        range: this._sheetsFilterService.getFilterModel(unitId, activeSheet.getSheetId())?.getRange(),
+                        skeleton: skeletonParams.skeleton,
+                    });
 
-            const filterModel = this._sheetFilterService.getFilterModel(unitId, activeSheet.getSheetId());
-            if (!filterModel || !filterModel.getRange()) {
-                return;
-            }
+                    return fromCallback(this._commandService.onCommandExecuted)
+                        .pipe(
+                            filter(([command]) =>
+                                command.type === CommandType.MUTATION
+                                && (command.params as ISheetCommandSharedParams).unitId === workbook.getUnitId()
+                                && FILTER_MUTATIONS.has(command.id)
+                            ),
+                            map(getParams),
+                            startWith(getParams()) // must trigger once
+                        );
+                })
+            )
 
-            this._renderRange(skeletonParams.unitId, filterModel.getRange()!, skeletonParams.skeleton);
-        });
+            .subscribe((renderParams) => {
+                this._disposeRendering();
+
+                if (!renderParams || !renderParams.range) {
+                    return;
+                }
+
+                this._renderRange(renderParams.unitId, renderParams.range, renderParams.skeleton);
+            });
     }
 
     private _renderRange(unitId: string, range: IRange, skeleton: SpreadsheetSkeleton): void {
@@ -94,6 +123,12 @@ export class SheetFilterRenderController extends Disposable {
             fill: 'rgba(0, 0, 0, 0.0)',
             ...style,
         } as ISelectionStyle);
+
+        scene.makeDirty(true);
+    }
+
+    private _renderFilterButtons(): void {
+
     }
 
     private _disposeRendering(): void {
@@ -101,3 +136,11 @@ export class SheetFilterRenderController extends Disposable {
         this._filterRangeShape = null;
     }
 }
+type CallbackFn<T extends readonly unknown[]> = (cb: (...args: T) => void) => IDisposable;
+
+export function fromCallback<T extends readonly unknown[]>(callback: CallbackFn<T>): Observable<T> {
+    return new Observable((subscriber) => {
+        const disposable: IDisposable | undefined = callback((...args: T) => subscriber.next(args));
+        return () => disposable?.dispose();
+    });
+};

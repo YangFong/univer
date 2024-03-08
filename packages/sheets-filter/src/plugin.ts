@@ -18,8 +18,8 @@ import { Plugin, PluginType } from '@univerjs/core';
 import type { Dependency } from '@wendellhu/redi';
 import { Inject, Injector } from '@wendellhu/redi';
 
-import { SheetFilterService } from './services/sheet-filter.service';
-import { SheetFilterController } from './controllers/sheet-fiter.controller';
+import { SheetsFilterService } from './services/sheet-filter.service';
+import { SheetsFilterController } from './controllers/sheet-fiter.controller';
 
 const NAME = 'UNIVER_SHEETS_FILTER_PLUGIN';
 
@@ -35,8 +35,8 @@ export class UniverSheetsFilterPlugin extends Plugin {
 
     override onStarting(injector: Injector): void {
         ([
-            [SheetFilterService],
-            [SheetFilterController],
+            [SheetsFilterService],
+            [SheetsFilterController],
         ] as Dependency[]).forEach((d) => injector.add(d));
     }
 }

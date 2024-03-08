@@ -13,3 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { type IShortcutItem, KeyCode, MetaKeys } from '@univerjs/ui';
+import { whenSheetEditorFocused } from '@univerjs/sheets-ui';
+import { SmartToggleFilterCommand } from '../commands/commands';
+
+export const SmartToggleFilterShortcut: IShortcutItem = {
+    id: SmartToggleFilterCommand.id,
+    binding: KeyCode.L | MetaKeys.CTRL_COMMAND | MetaKeys.SHIFT,
+    description: 'shortcut.sheet.smart-toggle-filter',
+    preconditions: whenSheetEditorFocused,
+    group: '4_sheet-edit',
+};

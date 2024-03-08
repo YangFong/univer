@@ -16,6 +16,7 @@
 
 import type { Nullable, Workbook } from '@univerjs/core';
 import { Disposable, ILogService, IUniverInstanceService, LifecycleStages, OnLifecycle, toDisposable } from '@univerjs/core';
+import { BehaviorSubject } from 'rxjs';
 
 import { FilterModel } from '../models/filter-model';
 
@@ -24,9 +25,12 @@ const FILTER_SNAPSHOT_KEY = 'autoFilter';
 /**
  * This service is responsible for managing filter models, especially their lifecycle.
  */
-@OnLifecycle(LifecycleStages.Starting, SheetFilterService)
-export class SheetFilterService extends Disposable {
+@OnLifecycle(LifecycleStages.Starting, SheetsFilterService)
+export class SheetsFilterService extends Disposable {
     private readonly _filterModels = new Map<string, Map<string, FilterModel>>();
+
+    private readonly _activeFilterModel$ = new BehaviorSubject<Nullable<FilterModel>>(null);
+    readonly activeFilterModel$ = this._activeFilterModel$.asObservable();
 
     constructor(
         @IUniverInstanceService private readonly _univerInstanceService: IUniverInstanceService,
@@ -50,12 +54,12 @@ export class SheetFilterService extends Disposable {
 
         const workbook = this._univerInstanceService.getUniverSheetInstance(unitId);
         if (!workbook) {
-            throw new Error(`[SheetFilterService]: could not create "FilterModel" on a non-existing workbook ${unitId}!`);
+            throw new Error(`[SheetsFilterService]: could not create "FilterModel" on a non-existing workbook ${unitId}!`);
         }
 
         const worksheet = workbook.getSheetBySheetId(subUnitId);
         if (!worksheet) {
-            throw new Error(`[SheetFilterService]: could not create "FilterModel" on a non-existing worksheet ${subUnitId}!`);
+            throw new Error(`[SheetsFilterService]: could not create "FilterModel" on a non-existing worksheet ${subUnitId}!`);
         }
 
         const filterModel = new FilterModel(unitId, subUnitId, worksheet);

@@ -15,47 +15,48 @@
  */
 
 // This file provides a ton of mutations to manipulate `FilterModel`. These models would be held on
-// `SheetFilterService`.
+// `SheetsFilterService`.
 
 import { CommandType } from '@univerjs/core';
 import type { IFilterColumn, IMutation, IRange, Nullable } from '@univerjs/core';
 import type { ISheetCommandSharedParams } from '@univerjs/sheets';
 
-import { SheetFilterService } from '../services/sheet-filter.service';
+import { SheetsFilterService } from '../services/sheet-filter.service';
 
-export interface ISetSheetFilterMutationParams extends ISheetCommandSharedParams {
+export interface ISetSheetsFilterRangeMutationParams extends ISheetCommandSharedParams {
     range: IRange;
 }
+
 /**
- * Set filter range of a Worksheet.
+ * Set filter range in a Worksheet. If the `FilterModel` does not exist, it will be created.
  */
-export const SetSheetFilterRangeMutation: IMutation<ISetSheetFilterMutationParams> = {
+export const SetSheetsFilterRangeMutation: IMutation<ISetSheetsFilterRangeMutationParams> = {
     id: 'sheet.mutation.set-filter-range',
     type: CommandType.MUTATION,
     handler: (accessor, params) => {
         const { subUnitId, unitId, range } = params;
-        const sheetFilterService = accessor.get(SheetFilterService);
-        const filterModel = sheetFilterService.ensureFilterModel(unitId, subUnitId);
+        const sheetsFilterService = accessor.get(SheetsFilterService);
+        const filterModel = sheetsFilterService.ensureFilterModel(unitId, subUnitId);
         filterModel.setRange(range);
         return true;
     },
 };
 
-export interface ISetSheetFilterConditionMutationParams extends ISheetCommandSharedParams {
+export interface ISetSheetsFilterConditionMutationParams extends ISheetCommandSharedParams {
     colId: number;
     condition: Nullable<IFilterColumn>;
 }
 /**
  * Set filter condition of a Worksheet.
  */
-export const SetSheetFilterConditionMutation: IMutation<ISetSheetFilterConditionMutationParams> = {
+export const SetSheetsFilterConditionMutation: IMutation<ISetSheetsFilterConditionMutationParams> = {
     id: 'sheet.mutation.set-filter-condition',
     type: CommandType.MUTATION,
     handler: (accessor, params) => {
         const { subUnitId, unitId, condition, colId } = params;
-        const sheetFilterService = accessor.get(SheetFilterService);
+        const sheetsFilterService = accessor.get(SheetsFilterService);
 
-        const filterModel = sheetFilterService.getFilterModel(unitId, subUnitId);
+        const filterModel = sheetsFilterService.getFilterModel(unitId, subUnitId);
         if (!filterModel) {
             return false;
         }
@@ -65,13 +66,30 @@ export const SetSheetFilterConditionMutation: IMutation<ISetSheetFilterCondition
     },
 };
 
-export interface IRemoveSheetFilterMutationParams extends ISheetCommandSharedParams {}
-export const RemoveSheetFilterMutation: IMutation<IRemoveSheetFilterMutationParams> = {
+export interface IRemoveSheetsFilterMutationParams extends ISheetCommandSharedParams {}
+export const RemoveSheetsFilterMutation: IMutation<IRemoveSheetsFilterMutationParams> = {
     id: 'sheet.mutation.remove-filter',
     type: CommandType.MUTATION,
     handler: (accessor, params) => {
         const { unitId, subUnitId } = params;
-        const sheetFilterService = accessor.get(SheetFilterService);
-        return sheetFilterService.removeFilterModel(unitId, subUnitId);
+        const sheetsFilterService = accessor.get(SheetsFilterService);
+        return sheetsFilterService.removeFilterModel(unitId, subUnitId);
+    },
+};
+
+export interface IReCalcSheetsFilterMutation extends ISheetCommandSharedParams {}
+export const ReCalcSheetsFilterMutation: IMutation<IReCalcSheetsFilterMutation> = {
+    id: 'sheet.mutation.re-calc-filter',
+    type: CommandType.MUTATION,
+    handler: (accessor, params) => {
+        const { unitId, subUnitId } = params;
+        const sheetsFilterService = accessor.get(SheetsFilterService);
+        const filterModel = sheetsFilterService.getFilterModel(unitId, subUnitId);
+        if (!filterModel) {
+            return false;
+        }
+
+        filterModel.reCalc();
+        return true;
     },
 };

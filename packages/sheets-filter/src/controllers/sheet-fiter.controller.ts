@@ -14,21 +14,33 @@
  * limitations under the License.
  */
 
-import { Disposable, LifecycleStages, OnLifecycle } from '@univerjs/core';
+import { Disposable, ICommandService, LifecycleStages, OnLifecycle } from '@univerjs/core';
 import { INTERCEPTOR_POINT, SheetInterceptorService } from '@univerjs/sheets';
 import { Inject } from '@wendellhu/redi';
 
-import { SheetFilterService } from '../services/sheet-filter.service';
+import { SheetsFilterService } from '../services/sheet-filter.service';
+import { ReCalcSheetsFilterMutation, RemoveSheetsFilterMutation, SetSheetsFilterConditionMutation, SetSheetsFilterRangeMutation } from '../commands/sheets-filter.mutations';
 
-@OnLifecycle(LifecycleStages.Starting, SheetFilterController)
-export class SheetFilterController extends Disposable {
+@OnLifecycle(LifecycleStages.Starting, SheetsFilterController)
+export class SheetsFilterController extends Disposable {
     constructor(
-        @Inject(SheetFilterService) private readonly _sheetFilterService: SheetFilterService,
+        @ICommandService private readonly _commandService: ICommandService,
+        @Inject(SheetsFilterService) private readonly _sheetsFilterService: SheetsFilterService,
         @Inject(SheetInterceptorService) private readonly _sheetInterceptorService: SheetInterceptorService
     ) {
         super();
 
+        this._initCommands();
         this._initRowFilteredInterceptor();
+    }
+
+    private _initCommands(): void {
+        [
+            SetSheetsFilterConditionMutation,
+            SetSheetsFilterRangeMutation,
+            ReCalcSheetsFilterMutation,
+            RemoveSheetsFilterMutation,
+        ].forEach((command) => this.disposeWithMe(this._commandService.registerCommand(command)));
     }
 
     private _initRowFilteredInterceptor(): void {
@@ -37,7 +49,7 @@ export class SheetFilterController extends Disposable {
                 if (filtered) return true;
 
                 // NOTE@wzhudev: maybe we should use some cache or add some cache on the skeleton to improve performance
-                const f = this._sheetFilterService
+                const f = this._sheetsFilterService
                     .getFilterModel(rowLocation.unitId, rowLocation.subUnitId)
                     ?.isRowFiltered(rowLocation.row);
                 return f ?? false;

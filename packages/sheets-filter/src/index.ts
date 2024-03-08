@@ -15,4 +15,24 @@
  */
 
 export { UniverSheetsFilterPlugin } from './plugin';
-export { SheetFilterService } from './services/sheet-filter.service';
+export { FilterColumn, FilterModel } from './models/filter-model';
+export {
+    equals,
+    notEquals,
+    getCustomFilterFn,
+    greaterThan,
+    greaterThanOrEqualTo,
+    lessThan,
+    lessThanOrEqualTo,
+} from './models/custom-filter';
+export { SheetsFilterService } from './services/sheet-filter.service';
+export {
+    type IReCalcSheetsFilterMutation,
+    type IRemoveSheetsFilterMutationParams,
+    type ISetSheetsFilterConditionMutationParams,
+    type ISetSheetsFilterRangeMutationParams,
+    SetSheetsFilterConditionMutation,
+    SetSheetsFilterRangeMutation,
+    ReCalcSheetsFilterMutation,
+    RemoveSheetsFilterMutation,
+} from './commands/sheets-filter.mutations';
