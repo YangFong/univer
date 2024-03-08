@@ -61,6 +61,10 @@ export function FindReplaceMenuItemFactory(accessor: IAccessor): IMenuButtonItem
     };
 }
 
+const FIND_REPLACE_PANEL_WIDTH = 350;
+const FIND_REPLACE_PANEL_RIGHT_PADDING = 20;
+const FIND_REPLACE_PANEL_TOP_PADDING = 0;
+
 @OnLifecycle(LifecycleStages.Rendered, FindReplaceController)
 export class FindReplaceController extends RxDisposable {
     constructor(
@@ -122,10 +126,11 @@ export class FindReplaceController extends RxDisposable {
         this._dialogService.open({
             id: FIND_REPLACE_DIALOG_ID,
             draggable: true,
-            width: 350,
+            width: FIND_REPLACE_PANEL_WIDTH,
             title: { title: this._localeService.t('find-replace.dialog.title') },
             children: { label: 'FindReplaceDialog' },
             destroyOnClose: true,
+            defaultPosition: getFindReplaceDialogDefaultPosition(),
             onClose: () => this._closePanel(),
         });
     }
@@ -136,4 +141,12 @@ export class FindReplaceController extends RxDisposable {
 
         queueMicrotask(() => this._layoutService.focus());
     }
+}
+
+function getFindReplaceDialogDefaultPosition(): { x: number; y: number } {
+    const { innerWidth } = window;
+    const x = innerWidth - FIND_REPLACE_PANEL_WIDTH - FIND_REPLACE_PANEL_RIGHT_PADDING;
+    const y = FIND_REPLACE_PANEL_TOP_PADDING;
+
+    return { x, y };
 }
