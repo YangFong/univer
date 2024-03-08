@@ -326,8 +326,9 @@ export class SheetFindModel extends FindModel {
         };
 
         const findInRange = (): IFindComplete => {
+            const currentSheet = this._workbook.getActiveSheet();
             const worksheet = this._workbook.getSheetBySheetName(sheetName);
-            if (!worksheet) {
+            if (!worksheet || currentSheet !== worksheet) {
                 this._matches = [];
                 this._matchesCount = 0;
                 this._matchesPosition = 0;
@@ -348,7 +349,22 @@ export class SheetFindModel extends FindModel {
             return newComplete;
         };
 
-        findInRange();
+        // When the skeleton changes, we should re-render the highlights.
+        this.disposeWithMe(this._sheetSkeletonManagerService.currentSkeleton$.subscribe(() => this._updateFindHighlight()));
+        // When the sheet model changes, we should re-search.
+        this.disposeWithMe(
+            fromCallback(this._commandService.onCommandExecuted)
+                .pipe(
+                    filter(([command]) => command.type === CommandType.MUTATION
+                        && (command.params as ISheetCommandSharedParams).unitId === this._workbook.getUnitId()
+                    ),
+                    throttleTime(600, undefined, { leading: false, trailing: true })
+                )
+                .subscribe(() => findInRange())
+        );
+
+        // activeSheet$ is a BehaviorSubject, so we don't need call findInWorksheet() once
+        this.disposeWithMe(this._workbook.activeSheet$.subscribe(() => findInRange()));
 
         return complete!;
     }
