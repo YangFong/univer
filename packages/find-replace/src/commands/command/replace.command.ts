@@ -18,7 +18,8 @@ import type { ICommand } from '@univerjs/core';
 import { CommandType, LocaleService } from '@univerjs/core';
 import { IConfirmService, IMessageService } from '@univerjs/ui';
 import { MessageType } from '@univerjs/design';
-import { IFindReplaceService } from '../..';
+
+import { IFindReplaceService } from '../../services/find-replace.service';
 
 export const ReplaceCurrentMatchCommand: ICommand = {
     id: 'ui.command.replace-current-match',

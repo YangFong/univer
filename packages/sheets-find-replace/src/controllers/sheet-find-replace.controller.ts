@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CommandType, Disposable, fromCallback, groupBy, ICommandService, IContextService, ILogService, IUndoRedoService, IUniverInstanceService, LifecycleStages, ObjectMatrix, OnLifecycle, replaceInDocumentBody, rotate, Tools } from '@univerjs/core';
+import { ColorKit, CommandType, Disposable, fromCallback, groupBy, ICommandService, IContextService, IUniverInstanceService, LifecycleStages, ObjectMatrix, OnLifecycle, replaceInDocumentBody, rotate, ThemeService, Tools } from '@univerjs/core';
 import type { ICellData, IObjectMatrixPrimitiveType, IRange, Nullable, Workbook, Worksheet } from '@univerjs/core';
 import { IRenderManagerService, RENDER_RAW_FORMULA_KEY } from '@univerjs/engine-render';
 import type { IFindComplete, IFindMatch, IFindMoveParams, IFindQuery, IFindReplaceProvider, IReplaceAllResult } from '@univerjs/find-replace';
@@ -129,8 +129,7 @@ export class SheetFindModel extends FindModel {
         @IRenderManagerService private readonly _renderManagerService: IRenderManagerService,
         @ICommandService private readonly _commandService: ICommandService,
         @IContextService private readonly _contextService: IContextService,
-        @ILogService private readonly _logService: ILogService,
-        @IUndoRedoService private readonly _undoRedoService: IUndoRedoService,
+        @Inject(ThemeService) private readonly _themeService: ThemeService,
         @Inject(SheetSkeletonManagerService) private readonly _sheetSkeletonManagerService: SheetSkeletonManagerService,
         @Inject(SelectionManagerService) private readonly _selectionManagerService: SelectionManagerService
     ) {
@@ -435,6 +434,8 @@ export class SheetFindModel extends FindModel {
         const { scene } = currentRender;
         const matches = this._matches;
 
+        const searchBackgroundColor = this._themeService.getCurrentTheme().gold400;
+        const color = new ColorKit(searchBackgroundColor).toRgb();
         const activeSheetId = this._workbook.getActiveSheet().getSheetId();
         const highlightShapes = matches.filter((match) => match.range.subUnitId === activeSheetId).map((find, index) => {
             const { startColumn, startRow, endColumn, endRow } = find.range.range;
@@ -452,6 +453,7 @@ export class SheetFindModel extends FindModel {
             const props: ISheetFindReplaceHighlightShapeProps = {
                 left: startX,
                 top: startY,
+                color,
                 width: Math.max(width, 2),
                 height: Math.max(height, 2),
                 evented: false,
