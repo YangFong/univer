@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Button, Checkbox, FormLayout, Input, InputWithSlot, MessageType, Pager, Select } from '@univerjs/design';
+import { Button, Checkbox, FormDualColumnLayout, FormLayout, Input, MessageType, Select } from '@univerjs/design';
 import { ILayoutService, IMessageService, RangeSelector, useActiveWorkbook, useActiveWorksheet, useObservable } from '@univerjs/ui';
 import type { IUnitRange, Nullable } from '@univerjs/core';
 import { ICommandService, IContextService, IUniverInstanceService, LocaleService } from '@univerjs/core';
@@ -24,7 +24,6 @@ import type { ForwardedRef } from 'react';
 import React, { forwardRef, Fragment, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import { fromEvent } from 'rxjs';
 
-import { FormDualColumnLayout } from '@univerjs/design/components/form-layout/FormLayout.js';
 import { serializeRangeWithSpreadsheet } from '@univerjs/engine-formula';
 import { FindBy, FindDirection, FindScope, IFindReplaceService } from '../../services/find-replace.service';
 import { FIND_REPLACE_DIALOG_FOCUS, FIND_REPLACE_INPUT_FOCUS } from '../../services/context-keys';
