@@ -19,7 +19,7 @@ import type { IMenuItemFactory } from '@univerjs/ui';
 import { IMenuService, IShortcutService } from '@univerjs/ui';
 import { Inject, Injector } from '@wendellhu/redi';
 
-import { SmartToggleFilterCommand } from '../commands/commands';
+import { SmartToggleSheetsFilterCommand } from '../commands/sheets-filter.command';
 import { SmartToggleFilterShortcut } from './sheets-filter.shortcut';
 import { ClearFilterConditionsMenuItemFactory, ReCalcFilterMenuItemFactory, SmartToggleFilterMenuItemFactory } from './sheets-filter.menu';
 
@@ -44,7 +44,7 @@ export class SheetsFilterUIController extends Disposable {
     }
 
     private _initCommands(): void {
-        [SmartToggleFilterCommand].forEach((c) => this.disposeWithMe(this._commandService.registerCommand(c)));
+        [SmartToggleSheetsFilterCommand].forEach((c) => this.disposeWithMe(this._commandService.registerCommand(c)));
     }
 
     private _initMenuItems(): void {

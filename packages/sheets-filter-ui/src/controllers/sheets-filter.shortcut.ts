@@ -16,10 +16,10 @@
 
 import { type IShortcutItem, KeyCode, MetaKeys } from '@univerjs/ui';
 import { whenSheetEditorFocused } from '@univerjs/sheets-ui';
-import { SmartToggleFilterCommand } from '../commands/commands';
+import { SmartToggleSheetsFilterCommand } from '../commands/sheets-filter.command';
 
 export const SmartToggleFilterShortcut: IShortcutItem = {
-    id: SmartToggleFilterCommand.id,
+    id: SmartToggleSheetsFilterCommand.id,
     binding: KeyCode.L | MetaKeys.CTRL_COMMAND | MetaKeys.SHIFT,
     description: 'filter.shortcut.smart-toggle-filter',
     preconditions: whenSheetEditorFocused,

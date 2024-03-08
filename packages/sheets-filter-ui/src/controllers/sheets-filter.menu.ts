@@ -20,7 +20,7 @@ import type { IAccessor } from '@wendellhu/redi';
 import { SheetsFilterService } from '@univerjs/sheets-filter';
 import { UniverInstanceType } from '@univerjs/core';
 
-import { ClearFilterConditionsCommand, ReCalcFilterConditionsCommand, SmartToggleFilterCommand } from '../commands/commands';
+import { ClearSheetsFilterConditionsCommand, ReCalcSheetsFilterConditionsCommand, SmartToggleSheetsFilterCommand } from '../commands/sheets-filter.command';
 
 /**
  * This menu item can indicated if there is an activated filter in the focused Univer sheet.
@@ -31,7 +31,7 @@ export function SmartToggleFilterMenuItemFactory(accessor: IAccessor): IMenuSele
     const sheetsFilterService = accessor.get(SheetsFilterService);
 
     return {
-        id: SmartToggleFilterCommand.id,
+        id: SmartToggleSheetsFilterCommand.id,
         group: MenuGroup.TOOLBAR_OTHERS,
         type: MenuItemType.BUTTON_SELECTOR,
         icon: 'BrushSingle',
@@ -48,12 +48,12 @@ export function ClearFilterConditionsMenuItemFactory(accessor: IAccessor): IMenu
     const sheetsFilterService = accessor.get(SheetsFilterService);
 
     return {
-        id: ClearFilterConditionsCommand.id,
+        id: ClearSheetsFilterConditionsCommand.id,
         group: MenuGroup.TOOLBAR_OTHERS,
         type: MenuItemType.BUTTON,
         icon: 'ClearFilterCondition',
         title: 'filter.toolbar.clear-filter-conditions',
-        positions: [SmartToggleFilterCommand.id],
+        positions: [SmartToggleSheetsFilterCommand.id],
     };
 }
 
@@ -61,11 +61,11 @@ export function ReCalcFilterMenuItemFactory(accessor: IAccessor): IMenuButtonIte
     const sheetsFilterService = accessor.get(SheetsFilterService);
 
     return {
-        id: ReCalcFilterConditionsCommand.id,
+        id: ReCalcSheetsFilterConditionsCommand.id,
         group: MenuGroup.TOOLBAR_OTHERS,
         type: MenuItemType.BUTTON,
         icon: 'ReCalcFilter',
         title: 'filter.toolbar.re-calc-filter-conditions',
-        positions: [SmartToggleFilterCommand.id],
+        positions: [SmartToggleSheetsFilterCommand.id],
     };
 }

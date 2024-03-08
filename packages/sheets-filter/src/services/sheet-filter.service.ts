@@ -20,8 +20,6 @@ import { BehaviorSubject } from 'rxjs';
 
 import { FilterModel } from '../models/filter-model';
 
-const FILTER_SNAPSHOT_KEY = 'autoFilter';
-
 /**
  * This service is responsible for managing filter models, especially their lifecycle.
  */

@@ -77,8 +77,8 @@ export const RemoveSheetsFilterMutation: IMutation<IRemoveSheetsFilterMutationPa
     },
 };
 
-export interface IReCalcSheetsFilterMutation extends ISheetCommandSharedParams {}
-export const ReCalcSheetsFilterMutation: IMutation<IReCalcSheetsFilterMutation> = {
+export interface IReCalcSheetsFilterMutationParams extends ISheetCommandSharedParams {}
+export const ReCalcSheetsFilterMutation: IMutation<IReCalcSheetsFilterMutationParams> = {
     id: 'sheet.mutation.re-calc-filter',
     type: CommandType.MUTATION,
     handler: (accessor, params) => {

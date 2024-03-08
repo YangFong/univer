@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Disposable, mergeSets, Rectangle } from '@univerjs/core';
+import { Disposable, mergeSets, Rectangle, Tools } from '@univerjs/core';
 import type { CellValue, IAutoFilter, ICustomFilter, ICustomFilters, IFilterColumn, IRange, Nullable, Worksheet } from '@univerjs/core';
 import { BehaviorSubject } from 'rxjs';
 import type { Observable, SubscriptionLike } from 'rxjs';
@@ -58,7 +58,7 @@ export class FilterModel extends Disposable {
      */
     serialize(): IAutoFilter {
         const result: IAutoFilter = {
-            ref: this._range!,
+            ref: Rectangle.clone(this._range!),
             filterColumns: Array.from(this._filterColumnByOffset)
                 .sort(([offset1], [offset2]) => offset1 - offset2)
                 .map(([_, filterColumn]) => filterColumn.serialize()),
@@ -144,6 +144,10 @@ export class FilterModel extends Disposable {
         this._rebuildAlreadyFilteredOutRowsCacheWithout(col);
         this._reCalcWithNoCacheColumns();
         this._emit();
+    }
+
+    getAllFilterColumn(): [number, FilterColumn][] {
+        return Array.from(this._filterColumnByOffset.entries());
     }
 
     getFilterColumn(offset: number): Nullable<FilterColumn> {
@@ -249,10 +253,10 @@ export class FilterColumn extends Disposable {
             throw new Error('[FilterColumn]: could not serialize without a filter column!');
         }
 
-        return {
+        return Tools.deepClone({
             ...this._filterColumn,
             colId: this._columnOffset,
-        };
+        });
     }
 
     hasCache(): boolean {

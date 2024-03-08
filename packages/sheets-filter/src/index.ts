@@ -27,7 +27,7 @@ export {
 } from './models/custom-filter';
 export { SheetsFilterService } from './services/sheet-filter.service';
 export {
-    type IReCalcSheetsFilterMutation,
+    type IReCalcSheetsFilterMutationParams,
     type IRemoveSheetsFilterMutationParams,
     type ISetSheetsFilterConditionMutationParams,
     type ISetSheetsFilterRangeMutationParams,
