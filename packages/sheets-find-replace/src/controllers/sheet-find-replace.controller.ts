@@ -25,7 +25,7 @@ import type { IScrollToCellCommandParams } from '@univerjs/sheets-ui';
 import { getCoordByCell, getSheetObject, ScrollToCellCommand, SheetSkeletonManagerService } from '@univerjs/sheets-ui';
 import { type IDisposable, Inject, Injector } from '@wendellhu/redi';
 import { deserializeRangeWithSheet } from '@univerjs/engine-formula';
-import { filter, skip, Subject, throttleTime } from 'rxjs';
+import { filter, merge, skip, Subject, throttleTime } from 'rxjs';
 
 import type { ISheetFindReplaceHighlightShapeProps } from '../views/shapes/find-replace-highlight.shape';
 import { SheetFindReplaceHighlightShape } from '../views/shapes/find-replace-highlight.shape';
@@ -277,20 +277,21 @@ export class SheetFindModel extends FindModel {
 
         // When the skeleton changes, we should re-render the highlights.
         this.disposeWithMe(this._sheetSkeletonManagerService.currentSkeleton$.subscribe(() => this._updateFindHighlight()));
-        // When the sheet model changes, we should re-search.
+
+        // When model changes we need to re-search.
         this.disposeWithMe(
-            fromCallback(this._commandService.onCommandExecuted)
-                .pipe(
-                    filter(([command]) => command.type === CommandType.MUTATION
-                        && (command.params as ISheetCommandSharedParams).unitId === this._workbook.getUnitId()
-                    ),
-                    throttleTime(600, undefined, { leading: false, trailing: true })
-                )
-                .subscribe(() => findInWorksheet())
+            merge(
+                fromCallback(this._commandService.onCommandExecuted).pipe(
+                    filter(([command]) => command.type === CommandType.MUTATION && (command.params as ISheetCommandSharedParams).unitId === this._workbook.getUnitId())
+                ),
+                // activeSheet$ is a BehaviorSubject, so we need to skip the first
+                this._workbook.activeSheet$.pipe(skip(1))
+            ).pipe(
+                throttleTime(600, undefined, { leading: false, trailing: true })
+            ).subscribe(() => findInWorksheet())
         );
 
-        // activeSheet$ is a BehaviorSubject, so we don't need call findInWorksheet() once
-        this.disposeWithMe(this._workbook.activeSheet$.subscribe(() => findInWorksheet()));
+        findInWorksheet();
 
         return complete!;
     }
