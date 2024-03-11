@@ -15,7 +15,7 @@
  */
 
 import type { Nullable } from '@univerjs/core';
-import { Disposable, DisposableCollection, IContextService, IUniverInstanceService, toDisposable } from '@univerjs/core';
+import { Disposable, DisposableCollection, IContextService, ILogService, IUniverInstanceService, toDisposable } from '@univerjs/core';
 import { RENDER_RAW_FORMULA_KEY } from '@univerjs/engine-render';
 import type { IDisposable } from '@wendellhu/redi';
 import { createIdentifier, Inject, Injector } from '@wendellhu/redi';
@@ -203,13 +203,14 @@ export class FindReplaceModel extends Disposable {
     constructor(
         private readonly _state: FindReplaceState,
         private readonly _providers: Set<IFindReplaceProvider>,
-        @IUniverInstanceService private readonly _univerInstanceService: IUniverInstanceService
+        @IUniverInstanceService private readonly _univerInstanceService: IUniverInstanceService,
+        @ILogService private readonly _logService: ILogService
     ) {
         super();
 
         // should restart finding when the following conditions changed
         this.disposeWithMe(
-            this._state.stateUpdates$.pipe(throttleTime(600, undefined, { leading: true, trailing: true })).subscribe(async (stateUpdate) => {
+            this._state.stateUpdates$.pipe(throttleTime(1000, undefined, { leading: true, trailing: true })).subscribe(async (stateUpdate) => {
                 const state = this._state.state;
                 if (shouldStateUpdateTriggerResearch(stateUpdate)) {
                     if (state.findString !== '' && !state.replaceRevealed) {
@@ -250,6 +251,8 @@ export class FindReplaceModel extends Disposable {
             return { results: [] };
         }
 
+        this._logService.debug('[FindReplaceModel]: start searching with string', this._state.findString);
+
         const providers = Array.from(this._providers);
         const findModels = (this._findModels = (
             await Promise.all(providers.map((provider) => provider.find({
@@ -269,6 +272,7 @@ export class FindReplaceModel extends Disposable {
         this.replaceables$.next(newMatches.filter((m) => m.replaceable) as IReplaceableMatch[]);
 
         if (!newMatches.length) {
+            this._state.changeState({ matchesCount: 0, matchesPosition: 0 });
             return { results: [] };
         }
 
@@ -277,7 +281,6 @@ export class FindReplaceModel extends Disposable {
             matchesCount: newMatches.length,
             matchesPosition: index + 1, //  the matches position start from 1
         });
-
         return { results: newMatches };
     }
 
