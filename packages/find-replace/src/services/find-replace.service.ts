@@ -232,6 +232,7 @@ export class FindReplaceModel extends Disposable {
         this.currentMatch$.complete();
         this.replaceables$.complete();
 
+        // reset all state, including
         this._state.changeState({ ...createInitFindReplaceState(), revealed: false });
     }
 
@@ -483,18 +484,19 @@ export interface IFindReplaceState {
 
 function createInitFindReplaceState(): IFindReplaceState {
     return {
-        revealed: true,
-        findString: '',
-        findCompleted: false,
-        inputtingFindString: '',
-        replaceRevealed: false,
-        matchesPosition: 0,
-        matchesCount: 0,
         caseSensitive: false,
-        matchesTheWholeCell: false,
-        findDirection: FindDirection.ROW,
         findBy: FindBy.VALUE,
+        findCompleted: false,
+        findDirection: FindDirection.ROW,
         findScope: FindScope.SUBUNIT,
+        findString: '',
+        inputtingFindString: '',
+        matchesCount: 0,
+        matchesPosition: 0,
+        matchesTheWholeCell: false,
+        replaceRevealed: false,
+        replaceString: '',
+        revealed: true,
     };
 }
 
