@@ -25,7 +25,7 @@ import type { IScrollToCellCommandParams } from '@univerjs/sheets-ui';
 import { getCoordByCell, getSheetObject, ScrollToCellCommand, SheetSkeletonManagerService } from '@univerjs/sheets-ui';
 import { type IDisposable, Inject, Injector } from '@wendellhu/redi';
 import { deserializeRangeWithSheet } from '@univerjs/engine-formula';
-import { filter, merge, skip, Subject, throttleTime } from 'rxjs';
+import { delay, filter, merge, skip, Subject, throttleTime } from 'rxjs';
 
 import type { ISheetFindReplaceHighlightShapeProps } from '../views/shapes/find-replace-highlight.shape';
 import { SheetFindReplaceHighlightShape } from '../views/shapes/find-replace-highlight.shape';
@@ -212,22 +212,23 @@ export class SheetFindModel extends FindModel {
             }
         };
 
-        this.disposeWithMe(this._sheetSkeletonManagerService.currentSkeleton$.subscribe(() => this._updateFindHighlight()));
-        this.disposeWithMe(this._workbook.activeSheet$.pipe(skip(1)).subscribe((activeSheet) => {
+        this.disposeWithMe(this._sheetSkeletonManagerService.currentSkeleton$.subscribe(() => {
+            this._updateFindHighlight();
+            this._updateCurrentHighlightShape(this._activeHighlightIndex);
+        }));
+
+        this.disposeWithMe(this._workbook.activeSheet$.pipe(skip(1), delay(200)).subscribe((activeSheet) => {
             if (!activeSheet) {
                 return;
             }
 
+            // If there's no match in the new worksheet, it wouldn't change matching position.
             const activeSheetId = activeSheet.getSheetId();
             if (!this._matchesByWorksheet.has(activeSheetId)) {
                 return;
             }
 
-            const firstMatch = this._matchesByWorksheet.get(activeSheetId)![0];
-            const matchIndex = this._matches.findIndex((match) => match === firstMatch);
-            this._updateFindHighlight();
-            this._updateCurrentHighlightShape(matchIndex);
-            this._activelyChangingMatch$.next(firstMatch);
+            this._findNextMatchOnActiveSheetChange(activeSheet);
         }));
 
         // When the sheet model changes, we should re-search.
@@ -244,6 +245,34 @@ export class SheetFindModel extends FindModel {
 
         findInWorkbook();
         return complete!;
+    }
+
+    /**
+     * This method is used in `findInWorkbook`. When the active sheet changes, this method helps to find the next match
+     * in the new worksheet.
+     */
+    private _findNextMatchOnActiveSheetChange(activeSheet: Worksheet): void {
+        let match: ISheetCellMatch;
+        let index: number;
+        let globalIndex = 0;
+
+        const matchesByWorksheet = this._matchesByWorksheet.get(activeSheet.getSheetId())!;
+        const selections = this._selectionManagerService.getSelections();
+        if (!selections?.length) {
+            match = matchesByWorksheet[0];
+            index = 0;
+            globalIndex = this._matches.findIndex((m) => m === match);
+        } else {
+            [match, globalIndex] = this._findNextMatchByRange(matchesByWorksheet, selections[0].range);
+            index = matchesByWorksheet.findIndex((m) => m === match);
+        }
+
+        this._matchesPosition = globalIndex + 1;
+        this._activelyChangingMatch$.next(match);
+
+        this._activeHighlightIndex = index;
+        this._updateFindHighlight();
+        this._updateCurrentHighlightShape(index);
     }
 
     /**
@@ -624,7 +653,7 @@ export class SheetFindModel extends FindModel {
         }
 
         if (this._query!.findScope !== FindScope.UNIT) {
-            return this._findPreviousMatchBySelection(this._matches, selections[0].range);
+            return this._findPreviousMatchByRange(this._matches, selections[0].range);
         }
 
         const currentSheetId = this._workbook.getActiveSheet().getSheetId();
@@ -633,7 +662,7 @@ export class SheetFindModel extends FindModel {
             return null;
         }
 
-        return this._findPreviousMatchBySelection(this._matchesByWorksheet.get(worksheetThatHasMatch)!, selections[0].range);
+        return this._findPreviousMatchByRange(this._matchesByWorksheet.get(worksheetThatHasMatch)!, selections[0].range);
     }
 
     private _findNextMatch(loop = false, stayIfOnMatch = false): [ISheetCellMatch, number] | null {
@@ -663,7 +692,7 @@ export class SheetFindModel extends FindModel {
         }
 
         if (this._query!.findScope !== FindScope.UNIT) {
-            return this._findNextMatchBySelection(this._matches, selections[0].range);
+            return this._findNextMatchByRange(this._matches, selections[0].range);
         }
 
         const currentSheetId = this._workbook.getActiveSheet().getSheetId();
@@ -672,7 +701,7 @@ export class SheetFindModel extends FindModel {
             return null;
         }
 
-        return this._findNextMatchBySelection(this._matchesByWorksheet.get(worksheetThatHasMatch)!, selections[0].range);
+        return this._findNextMatchByRange(this._matchesByWorksheet.get(worksheetThatHasMatch)!, selections[0].range);
     }
 
     private _findPreviousWorksheetThatHasAMatch(currentWorksheet: string, loop = false): string | null {
@@ -695,7 +724,7 @@ export class SheetFindModel extends FindModel {
         return first ?? null;
     }
 
-    private _findNextMatchBySelection(matches: ISheetCellMatch[], range: IRange, stayIfOnMatch = false): [ISheetCellMatch, number] {
+    private _findNextMatchByRange(matches: ISheetCellMatch[], range: IRange, stayIfOnMatch = false): [ISheetCellMatch, number] {
         const findByRow = this._query!.findDirection === FindDirection.ROW;
         let index = matches.findIndex((match) => {
             const matchRange = match.range.range;
@@ -716,7 +745,7 @@ export class SheetFindModel extends FindModel {
         return [match, this._matches.findIndex((m) => m === match)];
     }
 
-    private _findPreviousMatchBySelection(matches: ISheetCellMatch[], range: IRange, stayIfOnMatch = false): [ISheetCellMatch, number] {
+    private _findPreviousMatchByRange(matches: ISheetCellMatch[], range: IRange, stayIfOnMatch = false): [ISheetCellMatch, number] {
         const findByRow = this._query!.findDirection === FindDirection.ROW;
         let index = this._matches.findLastIndex((match) => {
             const matchRange = match.range.range;
