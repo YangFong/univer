@@ -17,6 +17,8 @@
 import {
     ICommandService,
     IContextService,
+    ILogService,
+    IUniverInstanceService,
     LifecycleStages,
     LocaleService,
     OnLifecycle,
@@ -68,10 +70,12 @@ const FIND_REPLACE_PANEL_TOP_PADDING = 0;
 @OnLifecycle(LifecycleStages.Rendered, FindReplaceController)
 export class FindReplaceController extends RxDisposable {
     constructor(
+        @IUniverInstanceService private readonly _univerInstanceService: IUniverInstanceService,
         @IMenuService private readonly _menuService: IMenuService,
         @IShortcutService private readonly _shortcutService: IShortcutService,
         @ICommandService private readonly _commandService: ICommandService,
         @IFindReplaceService private readonly _findReplaceService: IFindReplaceService,
+        @ILogService private readonly _logService: ILogService,
         @IDialogService private readonly _dialogService: IDialogService,
         @IContextService private readonly _contextService: IContextService,
         @ILayoutService private readonly _layoutService: ILayoutService,
@@ -99,6 +103,16 @@ export class FindReplaceController extends RxDisposable {
         });
     }
 
+    private _initShortcuts(): void {
+        [
+            OpenReplaceDialogShortcutItem,
+            OpenFindDialogShortcutItem,
+            MacOpenFindDialogShortcutItem,
+            GoToPreviousFindMatchShortcutItem,
+            GoToNextFindMatchShortcutItem,
+        ].forEach((s) => this.disposeWithMe(this._shortcutService.registerShortcut(s)));
+    }
+
     private _initUI(): void {
         this.disposeWithMe(this._menuService.addMenuItem(this._injector.invoke(FindReplaceMenuItemFactory)));
         this.disposeWithMe(this._componentManager.register('FindReplaceDialog', FindReplaceDialog));
@@ -110,16 +124,15 @@ export class FindReplaceController extends RxDisposable {
                 this._openPanel();
             }
         });
-    }
 
-    private _initShortcuts(): void {
-        [
-            OpenReplaceDialogShortcutItem,
-            OpenFindDialogShortcutItem,
-            MacOpenFindDialogShortcutItem,
-            GoToPreviousFindMatchShortcutItem,
-            GoToNextFindMatchShortcutItem,
-        ].forEach((s) => this.disposeWithMe(this._shortcutService.registerShortcut(s)));
+        // If focusing on a non-sheet Univer document, close the find replace dialog.
+        this.disposeWithMe(
+            this._univerInstanceService.focused$.pipe(takeUntil(this.dispose$)).subscribe((focused) => {
+                if (!focused || !this._univerInstanceService.getUniverSheetInstance(focused)) {
+                    this._closePanel();
+                }
+            })
+        );
     }
 
     private _openPanel(): void {

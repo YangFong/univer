@@ -16,7 +16,7 @@
 
 import { type IShortcutItem, KeyCode, MetaKeys } from '@univerjs/ui';
 
-import type { IContextService } from '@univerjs/core';
+import { FOCUSING_SHEET, type IContextService } from '@univerjs/core';
 import {
     GoToNextMatchOperation,
     GoToPreviousMatchOperation,
@@ -39,13 +39,18 @@ function whenFindReplaceInputFocused(contextService: IContextService): boolean {
 
 const FIND_REPLACE_SHORTCUT_GROUP = '7_find-replace-shortcuts';
 
+// Current we only support find replace on sheet.
+function whenSheetFocused(contextService: IContextService) {
+    return contextService.getContextValue(FOCUSING_SHEET);
+}
+
 export const OpenFindDialogShortcutItem: IShortcutItem = {
     id: OpenFindDialogOperation.id,
     description: 'find-replace.shortcut.open-find-dialog',
     binding: KeyCode.F | MetaKeys.CTRL_COMMAND,
     group: FIND_REPLACE_SHORTCUT_GROUP,
     preconditions(contextService) {
-        return !whenFindReplaceDialogFocused(contextService);
+        return !whenFindReplaceDialogFocused(contextService) && whenSheetFocused(contextService);
     },
 };
 
@@ -56,7 +61,7 @@ export const MacOpenFindDialogShortcutItem: IShortcutItem = {
     mac: KeyCode.F | MetaKeys.MAC_CTRL,
     group: FIND_REPLACE_SHORTCUT_GROUP,
     preconditions(contextService) {
-        return !whenFindReplaceDialogFocused(contextService);
+        return !whenFindReplaceDialogFocused(contextService) && whenSheetFocused(contextService);
     },
 };
 
@@ -67,7 +72,7 @@ export const OpenReplaceDialogShortcutItem: IShortcutItem = {
     mac: KeyCode.H | MetaKeys.MAC_CTRL,
     group: FIND_REPLACE_SHORTCUT_GROUP,
     preconditions(contextService) {
-        return !whenFindReplaceDialogFocused(contextService) || !whenReplaceRevealed(contextService);
+        return whenSheetFocused(contextService) && (!whenFindReplaceDialogFocused(contextService) || !whenReplaceRevealed(contextService));
     },
 };
 
