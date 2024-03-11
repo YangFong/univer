@@ -39,6 +39,7 @@ export class SheetFindReplaceHighlightShape extends Shape<ISheetFindReplaceHighl
 
     setShapeProps(props: Partial<ISheetFindReplaceHighlightShapeProps>): void {
         this._activated = !!props.activated;
+
         if (typeof props.inHiddenRange !== 'undefined') {
             this._inHiddenRange = props.inHiddenRange;
         }

@@ -25,7 +25,7 @@ import type { IScrollToCellCommandParams } from '@univerjs/sheets-ui';
 import { getCoordByCell, getSheetObject, ScrollToCellCommand, SheetSkeletonManagerService } from '@univerjs/sheets-ui';
 import { type IDisposable, Inject, Injector } from '@wendellhu/redi';
 import { deserializeRangeWithSheet } from '@univerjs/engine-formula';
-import { filter, merge, skip, Subject, throttleTime } from 'rxjs';
+import { debounceTime, filter, merge, skip, Subject, throttleTime } from 'rxjs';
 
 import type { ISheetFindReplaceHighlightShapeProps } from '../views/shapes/find-replace-highlight.shape';
 import { SheetFindReplaceHighlightShape } from '../views/shapes/find-replace-highlight.shape';
@@ -319,9 +319,7 @@ export class SheetFindModel extends FindModel {
                 ),
                 // activeSheet$ is a BehaviorSubject, so we need to skip the first
                 this._workbook.activeSheet$.pipe(skip(1))
-            ).pipe(
-                throttleTime(600, undefined, { leading: false, trailing: true })
-            ).subscribe(() => findInWorksheet())
+            ).pipe(debounceTime(200)).subscribe(() => findInWorksheet())
         );
 
         findInWorksheet();
@@ -454,6 +452,8 @@ export class SheetFindModel extends FindModel {
         });
 
         this._highlightShapes = [];
+
+        this._currentHighlightShape?.dispose();
         this._currentHighlightShape = null;
     }
 
@@ -522,18 +522,16 @@ export class SheetFindModel extends FindModel {
     private _updateCurrentHighlightShape(matchIndex?: number): void {
         // de-highlight the current highlighted shape
         this._currentHighlightShape?.setShapeProps({ activated: false });
+        this._currentHighlightShape = null;
 
         if (matchIndex !== undefined) {
             const shape = this._highlightShapes[matchIndex];
-            if (shape) {
-                this._currentHighlightShape = shape;
-                // TODO@wzhudev: we should check if it is is the hidden area
-                // recalc top and left
-
-                shape.setShapeProps({ activated: true });
+            if (!shape) {
+                return;
             }
-        } else {
-            this._currentHighlightShape = null;
+
+            this._currentHighlightShape = shape;
+            shape.setShapeProps({ activated: true });
         }
     }
 
@@ -594,8 +592,8 @@ export class SheetFindModel extends FindModel {
                 this._activeHighlightIndex = index;
             }
 
-            if (!noFocus) {
-                this._focusMatch(match);
+            if (!noFocus) this._focusMatch(match);
+            if (this._workbook.getActiveSheet().getSheetId() === match.range.subUnitId) {
                 this._updateCurrentHighlightShape(this._activeHighlightIndex);
             }
 
@@ -627,10 +625,11 @@ export class SheetFindModel extends FindModel {
                 this._activeHighlightIndex = index;
             }
 
-            if (!noFocus) {
-                this._focusMatch(match);
+            if (!noFocus) this._focusMatch(match);
+            if (this._workbook.getActiveSheet().getSheetId() === match.range.subUnitId) {
                 this._updateCurrentHighlightShape(this._activeHighlightIndex);
             }
+
             return match;
         }
 
@@ -705,7 +704,7 @@ export class SheetFindModel extends FindModel {
         }
 
         if (this._query!.findScope !== FindScope.UNIT) {
-            return this._findNextMatchByRange(this._matches, selections[0].range);
+            return this._findNextMatchByRange(this._matches, selections[0].range, stayIfOnMatch);
         }
 
         const currentSheetId = this._workbook.getActiveSheet().getSheetId();

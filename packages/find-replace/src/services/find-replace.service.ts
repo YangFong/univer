@@ -20,7 +20,7 @@ import { RENDER_RAW_FORMULA_KEY } from '@univerjs/engine-render';
 import type { IDisposable } from '@wendellhu/redi';
 import { createIdentifier, Inject, Injector } from '@wendellhu/redi';
 import type { Observable } from 'rxjs';
-import { BehaviorSubject, combineLatest, Subject, throttleTime } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, Subject, throttleTime } from 'rxjs';
 import { FIND_REPLACE_REPLACE_REVEALED } from './context-keys';
 
 export type FindProgressFn = () => void;
@@ -315,7 +315,7 @@ export class FindReplaceModel extends Disposable {
         const disposables = this._currentSearchingDisposables = new DisposableCollection();
 
         const matchesUpdateSubscription = combineLatest(models.map((model) => model.matchesUpdate$))
-            .pipe(throttleTime(600, undefined, { leading: true, trailing: true }))
+            .pipe(debounceTime(220))
             .subscribe(([...allMatches]) => {
                 const newMatches = this._matches = allMatches.flat();
                 if (newMatches.length) {
