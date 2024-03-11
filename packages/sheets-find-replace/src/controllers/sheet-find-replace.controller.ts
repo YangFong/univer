@@ -185,19 +185,21 @@ export class SheetFindModel extends FindModel {
         let firstSearch = true;
 
         const findInWorkbook = () => {
-            const allCompletes = this._workbook.getSheets().map((worksheet) => {
-                const complete = this._findInWorksheet(worksheet, query, unitId);
-                const sheetId = worksheet.getSheetId();
+            const allCompletes = this._workbook.getSheets()
+                .filter((worksheet) => !worksheet.isSheetHidden()) // We do not search in hidden Worksheets.
+                .map((worksheet) => {
+                    const complete = this._findInWorksheet(worksheet, query, unitId);
+                    const sheetId = worksheet.getSheetId();
 
-                const { results } = complete;
-                if (results.length) {
-                    this._matchesByWorksheet.set(sheetId, complete.results);
-                } else {
-                    this._matchesByWorksheet.delete(sheetId);
-                }
+                    const { results } = complete;
+                    if (results.length) {
+                        this._matchesByWorksheet.set(sheetId, complete.results);
+                    } else {
+                        this._matchesByWorksheet.delete(sheetId);
+                    }
 
-                return complete;
-            });
+                    return complete;
+                });
 
             this._matches = allCompletes.map((c) => c.results).flat();
             this._updateFindHighlight();
