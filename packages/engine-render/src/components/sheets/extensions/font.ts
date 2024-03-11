@@ -200,6 +200,10 @@ export class Font extends SheetExtension {
                         endX = endX - rightOffset;
                     }
 
+                    if (endX <= startX) {
+                        return true;
+                    }
+
                     ctx.translate(startX, startY);
                     this._renderDocuments(ctx, docsConfig, startX, startY, endX, endY, rowIndex, columnIndex, overflowCache);
                     ctx.restore();
