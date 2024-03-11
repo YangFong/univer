@@ -198,9 +198,7 @@ export class FindReplaceModel extends Disposable {
 
     private _currentSearchingDisposables: Nullable<DisposableCollection> = null;
 
-    get searched(): boolean {
-        return this._findModels.length > 0;
-    }
+    get searched(): boolean { return this._findModels.length > 0; }
 
     constructor(
         private readonly _state: FindReplaceState,
@@ -790,12 +788,7 @@ export class FindReplaceService extends Disposable implements IFindReplaceServic
             throw new Error('[FindReplaceService] replaceAll: model is not initialized!');
         }
 
-        const result = await this._model.replaceAll();
-        if (result.failure === 0) {
-            this.terminate();
-        }
-
-        return result;
+        return this._model.replaceAll();
     }
 
     revealReplace(): void {
