@@ -54,6 +54,7 @@ const locale: typeof enUS = {
                 value: '查找值',
             },
             'no-match': '已完成搜索，但是未找到任何匹配项',
+            'no-result': '无结果',
         },
         replace: {
             'all-success': '已全部替换 {0} 个匹配项',

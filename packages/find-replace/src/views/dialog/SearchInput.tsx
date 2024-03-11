@@ -31,33 +31,30 @@ export interface ISearchInputProps extends Pick<IInputWithSlotProps, 'onFocus' |
 
 export function SearchInput(props: ISearchInputProps) {
     const { findCompleted: findComplete, localeService, matchesCount, matchesPosition, findString, findReplaceService, onChange, ...rest } = props;
-    const showPager = findComplete || matchesCount > 0;
+    const noResult = findComplete && matchesCount === 0;
 
     return (
         <InputWithSlot
             autoFocus={true}
             placeholder={localeService.t('find-replace.dialog.find-placeholder')}
             slot={(
-                showPager
-                    ? (
-                        <Pager
-                            loop={true}
-                            value={matchesPosition}
-                            total={matchesCount}
-                            onChange={(newIndex) => {
-                                if (matchesPosition === matchesCount && newIndex === 1) {
-                                    findReplaceService.moveToNextMatch();
-                                } else if (matchesPosition === 1 && newIndex === matchesCount) {
-                                    findReplaceService.moveToPreviousMatch();
-                                } else if (newIndex < matchesPosition) {
-                                    findReplaceService.moveToPreviousMatch();
-                                } else {
-                                    findReplaceService.moveToNextMatch();
-                                }
-                            }}
-                        />
-                    )
-                    : null
+                <Pager
+                    loop={true}
+                    text={noResult ? localeService.t('find-replace.dialog.no-result') : undefined}
+                    value={matchesPosition}
+                    total={matchesCount}
+                    onChange={(newIndex) => {
+                        if (matchesPosition === matchesCount && newIndex === 1) {
+                            findReplaceService.moveToNextMatch();
+                        } else if (matchesPosition === 1 && newIndex === matchesCount) {
+                            findReplaceService.moveToPreviousMatch();
+                        } else if (newIndex < matchesPosition) {
+                            findReplaceService.moveToPreviousMatch();
+                        } else {
+                            findReplaceService.moveToNextMatch();
+                        }
+                    }}
+                />
             )}
             value={findString}
             onChange={(value) => onChange?.(value)}

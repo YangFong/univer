@@ -52,6 +52,7 @@ const locale = {
                 formula: 'Find Formula',
             },
             'no-match': 'Finding completed but no match found.',
+            'no-result': 'No Result',
         },
         replace: {
             'all-success': 'Replaced all {0} matches',

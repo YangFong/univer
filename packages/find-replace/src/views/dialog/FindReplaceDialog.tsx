@@ -17,7 +17,7 @@
 import { Button, Checkbox, FormDualColumnLayout, FormLayout, Input, MessageType, Select } from '@univerjs/design';
 import { ILayoutService, IMessageService, RangeSelector, useActiveWorkbook, useActiveWorksheet, useObservable } from '@univerjs/ui';
 import type { IUnitRange, Nullable } from '@univerjs/core';
-import { ICommandService, IContextService, IUniverInstanceService, LocaleService } from '@univerjs/core';
+import { ICommandService, IContextService, LocaleService } from '@univerjs/core';
 import type { IDisposable } from '@wendellhu/redi';
 import { useDependency } from '@wendellhu/redi/react-bindings';
 import type { ForwardedRef } from 'react';
@@ -94,7 +94,6 @@ export const ReplaceDialog = forwardRef(function ReplaceDIalogImpl(_props, ref) 
     const localeService = useDependency(LocaleService);
     const commandService = useDependency(ICommandService);
     const messageService = useDependency(IMessageService);
-    const univerInstanceService = useDependency(IUniverInstanceService);
 
     const currentMatch = useObservable(findReplaceService.currentMatch$, undefined, true);
     const replaceables = useObservable(findReplaceService.replaceables$, undefined, true);
