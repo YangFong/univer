@@ -919,26 +919,34 @@ const VALUE_PASSING_OBJECT: IValuePassingObject = { hit: false, replaceable: fal
  * @param query the parsed query object
  * @returns if the cell is hit, replaceable and is a formula
  */
-function hitCell(worksheet: Worksheet, row: number, col: number, query: IFindQuery, cellData: ICellData): IValuePassingObject {
+export function hitCell(worksheet: Worksheet, row: number, col: number, query: IFindQuery, cellData: ICellData): IValuePassingObject {
     const { findBy } = query;
+    const findByFormula = findBy === FindBy.FORMULA;
 
     const rawData = worksheet.getCellRaw(row, col);
     VALUE_PASSING_OBJECT.rawData = rawData;
 
-    // deal with formula first
+    // Deal with formula searching first.
     const hasFormula = !!rawData?.f;
     if (hasFormula) {
         VALUE_PASSING_OBJECT.isFormula = true;
 
-        if (findBy === FindBy.FORMULA && rawData.f!.toLowerCase().indexOf(query.findString) > -1) {
+        // For formula, it is only replaceable when it matches the raw formula.
+        if (findByFormula) {
+            const formulaMatch = matchCellData({ v: rawData.f! }, query);
+            if (formulaMatch) {
+                VALUE_PASSING_OBJECT.hit = true;
+                VALUE_PASSING_OBJECT.replaceable = true;
+                return VALUE_PASSING_OBJECT;
+            }
+        }
+
+        // Otherwise, no matter it matches the result value, it should be unreplaceable.
+        VALUE_PASSING_OBJECT.replaceable = false;
+        if (matchCellData(cellData, query)) {
             VALUE_PASSING_OBJECT.hit = true;
-            VALUE_PASSING_OBJECT.replaceable = true;
-        } else if (matchCellData(cellData, query)) {
-            VALUE_PASSING_OBJECT.hit = true;
-            VALUE_PASSING_OBJECT.replaceable = false;
         } else {
             VALUE_PASSING_OBJECT.hit = false;
-            VALUE_PASSING_OBJECT.replaceable = false;
         }
 
         return VALUE_PASSING_OBJECT;
