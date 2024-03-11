@@ -44,6 +44,12 @@ export interface IFindMoveParams {
 
     /** If the the selection is on the match and then should stay on the match. */
     stayIfOnMatch?: boolean;
+
+    /**
+     * If this param is true, we should only change matching position without performing focusing.
+     * This usually happens when "moving" is triggered when a document's content changes.
+     */
+    noFocus?: boolean;
 }
 
 export interface IReplaceAllResult {
@@ -313,7 +319,7 @@ export class FindReplaceModel extends Disposable {
             .subscribe(([...allMatches]) => {
                 const newMatches = this._matches = allMatches.flat();
                 if (newMatches.length) {
-                    const index = this._moveToInitialMatch(this._findModels, newMatches);
+                    const index = this._moveToInitialMatch(this._findModels, newMatches, true);
                     this._state.changeState({ matchesCount: newMatches.length, matchesPosition: index + 1, findCompleted: false });
                     this.replaceables$.next(newMatches.filter((m) => m.replaceable) as IReplaceableMatch[]);
                 } else {
@@ -411,7 +417,7 @@ export class FindReplaceModel extends Disposable {
         }
     }
 
-    private _moveToInitialMatch(findModels: FindModel[], results: IFindMatch[]): number {
+    private _moveToInitialMatch(findModels: FindModel[], results: IFindMatch[], noFocus = false): number {
         const focusedUnitId = this._univerInstanceService.getFocusedUniverInstance()?.getUnitId();
         if (!focusedUnitId) {
             return -1;
@@ -420,7 +426,7 @@ export class FindReplaceModel extends Disposable {
         const findModelOnFocusUnit = findModels.find((model) => model.unitId === focusedUnitId);
         if (findModelOnFocusUnit) {
             this._matchingModel = findModelOnFocusUnit;
-            const nextMatch = findModelOnFocusUnit.moveToNextMatch({ stayIfOnMatch: true });
+            const nextMatch = findModelOnFocusUnit.moveToNextMatch({ stayIfOnMatch: true, noFocus });
             const index = results.findIndex((value) => value === nextMatch);
             this.currentMatch$.next(nextMatch);
             return index;
@@ -428,7 +434,7 @@ export class FindReplaceModel extends Disposable {
 
         // otherwise we just simply match the first result
         this._matchingModel = findModels[0];
-        const nextMatch = this._matchingModel.moveToNextMatch();
+        const nextMatch = this._matchingModel.moveToNextMatch({ noFocus });
         const matchPosition = this._matches.findIndex((m) => m === nextMatch);
         this.currentMatch$.next(nextMatch);
         return matchPosition;

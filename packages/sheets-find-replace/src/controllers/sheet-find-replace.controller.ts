@@ -20,12 +20,12 @@ import { IRenderManagerService, RENDER_RAW_FORMULA_KEY } from '@univerjs/engine-
 import type { IFindComplete, IFindMatch, IFindMoveParams, IFindQuery, IFindReplaceProvider, IReplaceAllResult } from '@univerjs/find-replace';
 import { FindBy, FindDirection, FindModel, FindScope, IFindReplaceService } from '@univerjs/find-replace';
 import type { ISetRangeValuesCommandParams, ISetWorksheetActivateCommandParams, ISheetCommandSharedParams } from '@univerjs/sheets';
-import { SelectionManagerService, SetRangeValuesCommand, SetWorksheetActivateCommand } from '@univerjs/sheets';
+import { SelectionManagerService, SetRangeValuesCommand, SetWorksheetActivateCommand, SetWorksheetActiveOperation } from '@univerjs/sheets';
 import type { IScrollToCellCommandParams } from '@univerjs/sheets-ui';
 import { getCoordByCell, getSheetObject, ScrollToCellCommand, SheetSkeletonManagerService } from '@univerjs/sheets-ui';
 import { type IDisposable, Inject, Injector } from '@wendellhu/redi';
 import { deserializeRangeWithSheet } from '@univerjs/engine-formula';
-import { delay, filter, merge, skip, Subject, throttleTime } from 'rxjs';
+import { filter, merge, skip, Subject, throttleTime } from 'rxjs';
 
 import type { ISheetFindReplaceHighlightShapeProps } from '../views/shapes/find-replace-highlight.shape';
 import { SheetFindReplaceHighlightShape } from '../views/shapes/find-replace-highlight.shape';
@@ -217,19 +217,21 @@ export class SheetFindModel extends FindModel {
             this._updateCurrentHighlightShape(this._activeHighlightIndex);
         }));
 
-        this.disposeWithMe(this._workbook.activeSheet$.pipe(skip(1), delay(200)).subscribe((activeSheet) => {
-            if (!activeSheet) {
-                return;
-            }
+        this.disposeWithMe(
+            fromCallback(this._commandService.onCommandExecuted)
+                .pipe(
+                    filter(([command, options]) => command.id === SetWorksheetActiveOperation.id && !options?.fromFindReplace)
+                )
+                .subscribe(() => {
+                    const activeSheet = this._workbook.getActiveSheet();
+                    const activeSheetId = activeSheet.getSheetId();
+                    if (!this._matchesByWorksheet.has(activeSheetId)) {
+                        return;
+                    }
 
-            // If there's no match in the new worksheet, it wouldn't change matching position.
-            const activeSheetId = activeSheet.getSheetId();
-            if (!this._matchesByWorksheet.has(activeSheetId)) {
-                return;
-            }
-
-            this._findNextMatchOnActiveSheetChange(activeSheet);
-        }));
+                    this._findNextMatchOnActiveSheetChange(activeSheet);
+                })
+        );
 
         // When the sheet model changes, we should re-search.
         this.disposeWithMe(
@@ -542,13 +544,17 @@ export class SheetFindModel extends FindModel {
     private _focusMatch(match: ISheetCellMatch): void {
         const subUnitId = match.range.subUnitId;
         if (subUnitId !== this._workbook.getActiveSheet().getSheetId()) {
-            this._commandService.syncExecuteCommand(SetWorksheetActivateCommand.id, {
-                unitId: this._workbook.getUnitId(),
-                subUnitId,
-            } as ISetWorksheetActivateCommandParams);
+            this._commandService.syncExecuteCommand(SetWorksheetActivateCommand.id,
+                { unitId: this._workbook.getUnitId(), subUnitId } as ISetWorksheetActivateCommandParams,
+                { fromFindReplace: true }
+            );
         }
 
-        this._commandService.syncExecuteCommand(ScrollToCellCommand.id, { range: match.range.range } as IScrollToCellCommandParams);
+        this._commandService.syncExecuteCommand(
+            ScrollToCellCommand.id,
+            { range: match.range.range } as IScrollToCellCommandParams,
+            { fromFindReplace: true }
+        );
     }
 
     private _tryRestoreLastMatchesPosition(lastMatch: Nullable<ISheetCellMatch>, newMatches: ISheetCellMatch[]): number {
@@ -575,6 +581,7 @@ export class SheetFindModel extends FindModel {
 
         const loop = params?.loop ?? false;
         const stayIfOnMatch = params?.stayIfOnMatch ?? false;
+        const noFocus = params?.noFocus ?? false;
 
         const matchToMove = this._findNextMatch(loop, stayIfOnMatch);
         if (matchToMove) {
@@ -587,8 +594,11 @@ export class SheetFindModel extends FindModel {
                 this._activeHighlightIndex = index;
             }
 
-            this._focusMatch(match);
-            this._updateCurrentHighlightShape(this._activeHighlightIndex);
+            if (!noFocus) {
+                this._focusMatch(match);
+                this._updateCurrentHighlightShape(this._activeHighlightIndex);
+            }
+
             return match;
         }
 
@@ -604,6 +614,7 @@ export class SheetFindModel extends FindModel {
 
         const loop = params?.loop ?? false;
         const stayIfOnMatch = params?.stayIfOnMatch ?? false;
+        const noFocus = params?.noFocus ?? false;
 
         const matchToMove = this._findPreviousMatch(loop, stayIfOnMatch);
         if (matchToMove) {
@@ -616,8 +627,10 @@ export class SheetFindModel extends FindModel {
                 this._activeHighlightIndex = index;
             }
 
-            this._focusMatch(match);
-            this._updateCurrentHighlightShape(this._activeHighlightIndex);
+            if (!noFocus) {
+                this._focusMatch(match);
+                this._updateCurrentHighlightShape(this._activeHighlightIndex);
+            }
             return match;
         }
 
